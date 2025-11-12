@@ -30,7 +30,7 @@ const KrishiCardShow = ({datas}) => {
             </div> 
 
             <div  className='px-4  py-1 flex justify-between items-center'>
-                <p className="flex gap-1 items-center text-lg ">price: <span>{datas.pricePerUnit}</span><span>{datas.unit}</span></p>
+                <p className="flex gap-1 items-center text-lg ">pricePerUnit: <span>{datas.pricePerUnit}</span><span>{datas.unit}</span></p>
                 <p  className="flex gap-1 items-center text-lg ">Quantity:<span>{datas.quantity}</span></p>
             </div>
             <div>

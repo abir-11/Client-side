@@ -43,6 +43,7 @@ const router=createBrowserRouter([
       },
       {
         path:'/cropsDetails/:id',
+        loader:({params})=>fetch(`http://localhost:3000/krishiCard/${params.id}`),
         element:<CropsDetails />
       },
       {
