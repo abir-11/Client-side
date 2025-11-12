@@ -12,6 +12,8 @@ import Home from './Layout/Home/Home.jsx'
 import AllCrops from './Layout/All-Crops/AllCrops.jsx';
 import CropsDetails from './Layout/CropsDetails/CropsDetails.jsx';
 import Error from './Layout/All-Crops/Error.jsx';
+import ErrorPage from './Layout/ErrorPage/ErrorPage.jsx';
+
 
 
 
@@ -19,6 +21,7 @@ const router=createBrowserRouter([
   {
     path:'/',
     Component:Root,
+    errorElement:<ErrorPage></ErrorPage>,
     children:[
       {
        index:true,
@@ -45,7 +48,8 @@ const router=createBrowserRouter([
       {
         path:'/error',
         Component:Error
-      }
+      },
+     
       
     ]
   }
