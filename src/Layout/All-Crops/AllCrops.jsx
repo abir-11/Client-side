@@ -21,6 +21,7 @@ const AllCrops = () => {
       })
       .catch(err => console.error(err));
   }, []);
+  
  
   useEffect(() => {
     const term = search.trim().toLowerCase();
