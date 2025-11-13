@@ -3,8 +3,6 @@ import { use } from 'react';
 import { useLoaderData } from 'react-router';
 import { AuthContext } from '../../Context/AuthContext/AuthContext';
 import { useState } from 'react';
-import { useEffect } from 'react';
-import { useLocation } from 'react-router';
 import { toast, ToastContainer } from 'react-toastify';
 import Swal from 'sweetalert2';
 
@@ -24,9 +22,7 @@ const CropsDetails = () => {
     return <p className='text-center text-lg text-green-600'>Loading...</p>;
   }
 
-const buttonClick=()=>{
-    toast('Your form Successfully submit')
-}
+
 
 const handleBidSubmit=(e)=>{
        e.preventDefault();

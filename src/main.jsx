@@ -15,6 +15,7 @@ import Error from './Layout/All-Crops/Error.jsx';
 import ErrorPage from './Layout/ErrorPage/ErrorPage.jsx';
 import Profile from './Layout/MyProfile/Profile.jsx';
 import AddCrop from './Layout/AddCrop/AddCrop.jsx';
+import Myposts from './Layout/MyPosts/Myposts.jsx';
 
 
 
@@ -59,6 +60,11 @@ const router=createBrowserRouter([
      {
       path:'/addCrop',
       Component:AddCrop
+     },
+     {
+      path:'/my-posts',
+      loader:()=>fetch('http://localhost:3000/my_krishi_card'),
+      Component:Myposts
      }
       
     ]

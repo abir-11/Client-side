@@ -114,16 +114,9 @@ const AddCrop = () => {
                           toast.error("Crops not saved!");  
                         }
                         console.log('after placing Crops',data)
-                     })
-         
-         
-            
-         
+                     })   
     }
 
-    
-
-    
     return (
         <div className='min-h-screen my-5'>
               <div>
