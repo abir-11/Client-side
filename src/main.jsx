@@ -16,6 +16,7 @@ import ErrorPage from './Layout/ErrorPage/ErrorPage.jsx';
 import Profile from './Layout/MyProfile/Profile.jsx';
 import AddCrop from './Layout/AddCrop/AddCrop.jsx';
 import Myposts from './Layout/MyPosts/Myposts.jsx';
+import MyInterests from './Layout/MyInterests/MyInterests.jsx';
 
 
 
@@ -63,9 +64,18 @@ const router=createBrowserRouter([
      },
      {
       path:'/my-posts',
-      loader:()=>fetch('http://localhost:3000/my_krishi_card'),
+      loader:()=>fetch('http://localhost:3000/krishiCard'),
       Component:Myposts
-     }
+     },
+     {
+  path: "/myinterests",
+  element: (
+    
+      <MyInterests/>
+    
+  ),
+}
+     
       
     ]
   }

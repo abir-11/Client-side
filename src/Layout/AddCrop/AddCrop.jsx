@@ -33,46 +33,47 @@ const AddCrop = () => {
             }
 
          }
-         fetch('http://localhost:3000/my_krishi_card',{
-            method:'POST',
-            headers:{
-                'Content-Type':"application/json"
-            },
-            body:JSON.stringify(cropsAdd)
-         })
-         .then(res=>res.json())
-         .then(data=>{
-             if(data.insertedId){
-                           Swal.fire({
-              title: "Are you sure?",
-              text: "You will be able to submit this!",
-              icon: "warning",
-              showCancelButton: true,
-              confirmButtonColor: "#3085d6",
-              cancelButtonColor: "#d33",
-              confirmButtonText: "Yes, Submit it!"
-            }).then((result) => {
-              if (result.isConfirmed) {
-                Swal.fire({
-                  title: "Submit!",
-                  text: "Your file has been Sumbit.",
-                  icon: "success"
-                });
-              }
-            }); 
-                   //add the new bid to the state
-           cropsAdd._id = data.insertedId;
-           const newCrops = [...crop, cropsAdd];
-                   newCrops.sort((a,b)=>b.quantity-a.quantity)
-                   setCrop(newCrops)
-                   e.target.reset();
-                   ;
-                        }
-                        else{
-                          toast.error("Crops not saved!");  
-                        }
-                        console.log('after placing Crops',data)
-                     })
+
+        //  fetch('http://localhost:3000/my_krishi_card',{
+        //     method:'POST',
+        //     headers:{
+        //         'Content-Type':"application/json"
+        //     },
+        //     body:JSON.stringify(cropsAdd)
+        //  })
+        //  .then(res=>res.json())
+        //  .then(data=>{
+        //      if(data.insertedId){
+        //                    Swal.fire({
+        //       title: "Are you sure?",
+        //       text: "You will be able to submit this!",
+        //       icon: "warning",
+        //       showCancelButton: true,
+        //       confirmButtonColor: "#3085d6",
+        //       cancelButtonColor: "#d33",
+        //       confirmButtonText: "Yes, Submit it!"
+        //     }).then((result) => {
+        //       if (result.isConfirmed) {
+        //         Swal.fire({
+        //           title: "Submit!",
+        //           text: "Your file has been Sumbit.",
+        //           icon: "success"
+        //         });
+        //       }
+        //     }); 
+        //            //add the new bid to the state
+        //    cropsAdd._id = data.insertedId;
+        //    const newCrops = [...crop, cropsAdd];
+        //            newCrops.sort((a,b)=>b.quantity-a.quantity)
+        //            setCrop(newCrops)
+        //            e.target.reset();
+        //            ;
+        //                 }
+        //                 else{
+        //                   toast.error("Crops not saved!");  
+        //                 }
+        //                 console.log('after placing Crops',data)
+        //              })
          
 
               fetch('http://localhost:3000/krishiCard',{

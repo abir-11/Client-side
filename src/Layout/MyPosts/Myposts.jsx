@@ -1,27 +1,36 @@
 import React, { useRef, useState } from "react";
 import { useLoaderData } from "react-router";
-import { AuthContext } from "../../Context/AuthContext/AuthContext";
 import { use } from "react";
 import Swal from "sweetalert2";
+import { useEffect } from "react";
+import { AuthContext } from './../../Context/AuthContext/AuthContext';
 
 const Myposts = () => {
   const loadedData = useLoaderData();
   const { user, loading } = use(AuthContext);
-  const [crops, setCrops] = useState(loadedData); 
+  const [crops, setCrops] = useState([]);
   const modalRef = useRef(null);
   const [editingCrop, setEditingCrop] = useState(null);
+
+  // Filter user's own crops once loaded
+  useEffect(() => {
+    if (loadedData && user?.email) {
+      const myCrops = loadedData.filter(
+        (crop) => crop.owner?.ownerEmail === user.email
+      );
+      setCrops(myCrops);
+    }
+  }, [loadedData, user?.email]);
 
   if (loading) {
     return <p className="text-center text-lg text-green-600">Loading...</p>;
   }
 
-  // open modal with selected data
   const handleModelRef = (crop) => {
     setEditingCrop(crop);
     modalRef.current.showModal();
   };
 
-  // submit handler for edit form
   const handleSubmit = (e) => {
     e.preventDefault();
     const form = e.target;
@@ -29,23 +38,20 @@ const Myposts = () => {
     const updatedCrop = {
       name: form.name.value,
       type: form.type.value,
-      pricePerUnit: form.pricePerUnit.value,
-      quantity: form.quantity.value,
+      pricePerUnit: Number(form.pricePerUnit.value),
+      quantity: Number(form.quantity.value),
       description: form.description.value,
       image: form.image.value,
     };
 
-    fetch(`http://localhost:3000/my_krishi_card/${editingCrop._id}`, {
-      method: "PATCH", 
-      headers: {
-        "Content-Type": "application/json",
-      },
+    fetch(`http://localhost:3000/krishiCard/${editingCrop._id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updatedCrop),
     })
       .then((res) => res.json())
       .then((result) => {
         if (result.modifiedCount > 0 || result.acknowledged) {
-        //   update
           const updatedCrops = crops.map((item) =>
             item._id === editingCrop._id ? { ...item, ...updatedCrop } : item
           );
@@ -57,7 +63,7 @@ const Myposts = () => {
             text: "Your crop information has been updated successfully.",
           });
 
-          modalRef.current.close(); 
+          modalRef.current.close();
         } else {
           Swal.fire({
             icon: "error",
@@ -66,16 +72,9 @@ const Myposts = () => {
           });
         }
       })
-      .catch((err) => {
-        console.error(err);
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "Failed to update crop.",
-        });
-      });
+      .catch(() => Swal.fire("Error!", "Failed to update crop.", "error"));
   };
-   // Delete handler
+
   const handleDelete = (cropId) => {
     Swal.fire({
       title: "Are you sure?",
@@ -87,16 +86,13 @@ const Myposts = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch(`http://localhost:3000/my_krishi_card/${cropId}`, {
+        fetch(`http://localhost:3000/krishiCard/${cropId}`, {
           method: "DELETE",
         })
           .then((res) => res.json())
           .then((data) => {
             if (data.deletedCount > 0) {
-              // Remove 
-              const updatedCrops = crops.filter((c) => c._id !== cropId);
-              setCrops(updatedCrops);
-
+              setCrops(crops.filter((c) => c._id !== cropId));
               Swal.fire("Deleted!", "Your crop has been deleted.", "success");
             } else {
               Swal.fire("Error!", "Crop could not be deleted.", "error");
@@ -107,13 +103,13 @@ const Myposts = () => {
     });
   };
 
-
   return (
     <div className="min-h-screen mt-4 px-2 sm:px-4 md:px-8">
       <h1 className="text-2xl md:text-3xl font-bold text-center mb-4">
         My Posts
       </h1>
 
+      {/* Desktop Table */}
       <div className="hidden md:block overflow-x-auto">
         <table className="table table-zebra w-full">
           <thead className="bg-green-200 text-sm md:text-base">
@@ -139,7 +135,7 @@ const Myposts = () => {
                   <div>
                     <p className="font-bold">{datas.name}</p>
                     <p className="text-xs opacity-70">
-                     pricePerUnit: {datas.pricePerUnit}/kg | Quantity: {datas.quantity}
+                      pricePerUnit: {datas.pricePerUnit}/kg | Quantity: {datas.quantity}
                     </p>
                   </div>
                 </td>
@@ -152,7 +148,10 @@ const Myposts = () => {
                     >
                       Edit
                     </button>
-                    <button onClick={handleDelete} className="btn btn-outline btn-xs border-red-600 hover:bg-red-600 hover:text-white">
+                    <button
+                      onClick={() => handleDelete(datas._id)}
+                      className="btn btn-outline btn-xs border-red-600 hover:bg-red-600 hover:text-white"
+                    >
                       Delete
                     </button>
                   </div>
@@ -163,7 +162,7 @@ const Myposts = () => {
         </table>
       </div>
 
-      {/* small screen responsive cards */}
+      {/* Mobile Cards */}
       <div className="md:hidden flex flex-col gap-3">
         {crops.map((datas, index) => (
           <div key={datas._id || index} className="bg-green-50 p-3 rounded-lg shadow">
@@ -197,7 +196,10 @@ const Myposts = () => {
               >
                 Edit
               </button>
-              <button onClick={handleDelete} className="btn btn-xs btn-outline border-red-600 hover:bg-red-600 hover:text-white">
+              <button
+                onClick={() => handleDelete(datas._id)}
+                className="btn btn-xs btn-outline border-red-600 hover:bg-red-600 hover:text-white"
+              >
                 Delete
               </button>
             </div>
@@ -205,7 +207,7 @@ const Myposts = () => {
         ))}
       </div>
 
-      {/* Common Modal for both views */}
+      {/* Modal */}
       <dialog ref={modalRef} className="modal modal-middle">
         <div className="modal-box max-w-md">
           <h1 className="text-2xl font-bold text-center mb-4">Edit Crop</h1>

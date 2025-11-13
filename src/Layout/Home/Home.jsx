@@ -56,8 +56,8 @@ const Home = () => {
         speed={800}
         parallax={true}
         autoplay={{
-          delay: 3000, // প্রতি 3 সেকেন্ড পর slide পরিবর্তন হবে
-          disableOnInteraction: false, // ইউজার ক্লিক করলেও autoplay বন্ধ হবে না
+          delay: 3000, 
+          disableOnInteraction: false, 
         }}
         pagination={{
           clickable: true,
