@@ -6,12 +6,12 @@ import { getAuth } from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyCwXb0qPjenFVfYdX6J-o1ZayUwPxinQYE",
-  authDomain: "react-firebase-auth-6546f.firebaseapp.com",
-  projectId: "react-firebase-auth-6546f",
-  storageBucket: "react-firebase-auth-6546f.firebasestorage.app",
-  messagingSenderId: "591825837605",
-  appId: "1:591825837605:web:6d1ee460e7a79244f529cc"
+  apiKey: "AIzaSyCXmZq4UmFzW0hDxIwvZ5-0bizg1l1nzW4",
+  authDomain: "my-kishilink.firebaseapp.com",
+  projectId: "my-kishilink",
+  storageBucket: "my-kishilink.firebasestorage.app",
+  messagingSenderId: "409457439123",
+  appId: "1:409457439123:web:0e5c769b2398e19510f866"
 };
 
 // Initialize Firebase

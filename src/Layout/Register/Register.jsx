@@ -1,44 +1,48 @@
 import React from 'react';
-import { useLocation } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { Link } from 'react-router';
-import { useNavigate } from 'react-router';
-import { AuthContext } from '../../Context/AuthContext/AuthContext';
 import { useState } from 'react';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { use } from 'react';
+import { AuthContext } from './../../Context/AuthContext/AuthContext';
 const Register = () => {
     const [error,setError]=useState('')
   const [showpassword,setShowpassword]=useState(false);
   const {createUser}=use(AuthContext);
   const navigate=useNavigate();
   const location=useLocation();
-  const handleSignup=(event)=>{
+
+
+   const handleSignup = async (event) => {
     event.preventDefault();
-    const name=event.target.name.value;
-    const email=event.target.email.value;
-    const password=event.target.password.value;
-    const photoURL=event.target.photoURL.value;
-    const passWord=/^(?=.*[a-z])(?=.*[A-Z]).+$/;
-     if(!passWord.test(password)){
-      setError("use:/^(?=.*[a-z])(?=.*[A-Z]).+$/");
+    const displayName = event.target.name.value;
+    const email = event.target.email.value;
+    const password = event.target.password.value;
+    const photoURL = event.target.photoURL.value;
+
+    const passWord = /^(?=.*[a-z])(?=.*[A-Z]).+$/;
+    if (!passWord.test(password)) {
+      setError("Password must contain at least one uppercase and one lowercase letter.");
       return;
-     }
-     setError('');
-    createUser(email,password,name,photoURL)
-    .then((result)=>{
-      console.log(result.user)
-      navigate(location?.state || '/')
-    })
-    .catch(error=>{
+    }
+    setError('');
+
+    try {
+      const result = await createUser(email, password, displayName, photoURL);
+      //console.log(result.user);
+      console.log(result.displayName, result.photoURL);
+      navigate(location?.state || '/');
+    } catch (error) {
       console.log(error.message);
-      setError(error.message)
-    })
-  }
+      setError(error.message);
+    }
+  };
   
   const handleShowPassWorded=(e)=>{
       e.preventDefault();
       setShowpassword(!showpassword); 
-     }
+     };
+
     return (
        <div className="hero bg-base-200 min-h-screen">
   <div className="hero-content flex-col ">

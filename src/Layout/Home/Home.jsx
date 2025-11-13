@@ -185,7 +185,7 @@ const Home = () => {
 
             {/* kirshi card section */}
             <div>
-                <Suspense fallback={<p><span className="loading loading-spinner text-success flex justify-center"></span></p>}>
+                <Suspense fallback={<p><span className="loading loading-spinner text-success flex justify-center items-center text-center"></span></p>}>
                  <KrishiCardPromise krishiPromise={krishiPromise}></KrishiCardPromise>
                 </Suspense>
             </div>

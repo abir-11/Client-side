@@ -1,6 +1,8 @@
-import React, { useEffect } from 'react';
-import { createUserWithEmailAndPassword, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut } from 'firebase/auth';
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import {
+  createUserWithEmailAndPassword, GoogleAuthProvider,onAuthStateChanged, signInWithEmailAndPassword,signInWithPopup,signOut,
+  updateProfile
+} from 'firebase/auth';
 import { AuthContext } from './../AuthContext/AuthContext';
 import { auth } from './../../Firebase/Firebase.init';
 
@@ -9,17 +11,30 @@ const AuthProvider = ({children}) => {
      const [user,setUser]=useState(null);
      const [loading,setLoading]=useState(true);
     //SignUp
-    const createUser=(email,password,name,photoURL)=>{
-        return createUserWithEmailAndPassword(auth,email,password,name,photoURL)
+   const createUser = async (email, password, displayName, photoURL) => {
+    setLoading(true);
+    try {
+      const result = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(result.user, {
+        displayName: displayName,
+        photoURL: photoURL
+      });
+      await result.user.reload();
+      setUser({ ...auth.currentUser }); 
+    } finally {
+      setLoading(false);
     }
+  };
     //singin
     const SingInUser=(email,password)=>{
         return signInWithEmailAndPassword(auth,email,password);
     }
     //Google SignIn
-    const signInWithGoogle=()=>{
-        return signInWithPopup(auth,googleProvider)
-    }
+    const signInWithGoogle = () => {
+  return signInWithPopup(auth, googleProvider);
+};
+
+   
     //singout
     const singOutUser=()=>{
         return signOut(auth)
@@ -35,11 +50,12 @@ const AuthProvider = ({children}) => {
         return ()=>{
             unsubcribe();
         }
-    }
+    },[]
     )
     const authInfo={
         user,
         loading,
+        setUser,
         createUser,
         SingInUser,
         signInWithGoogle,
@@ -56,5 +72,4 @@ const AuthProvider = ({children}) => {
         </div>
     );
 };
-
 export default AuthProvider;

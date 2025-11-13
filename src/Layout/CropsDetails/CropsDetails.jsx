@@ -6,31 +6,85 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router';
 import { toast, ToastContainer } from 'react-toastify';
+import Swal from 'sweetalert2';
 
 const CropsDetails = () => {
     const Crops=useLoaderData();
+    const [quantity, setQuantity] = useState(0);
+    const [bids,setBids]=useState([]);
+    const [message, setMessage] = useState('');
+    const {pricePerUnit}=Crops;
+    const totalPrice = quantity * pricePerUnit;
     console.log(Crops);
     const {_id:CropId}=Crops;
     const {user,loading}=use(AuthContext);
-    const [data,setData]=useState([]);
-    useEffect(()=>{
-
-    })
    
-  
-     
- 
-
+   
   if (loading) {
     return <p className='text-center text-lg text-green-600'>Loading...</p>;
   }
-const handleForm=(event)=>{
-    event.preventDefault();
-     event.target.reset()
-}
+
 const buttonClick=()=>{
     toast('Your form Successfully submit')
 }
+
+const handleBidSubmit=(e)=>{
+       e.preventDefault();
+        const name=e.target.name.value;
+         const email=e.target.email.value;
+         const message = e.target.message.value;
+         const newBid={
+            CropId:CropId,
+            userEmail:email,
+            userName:name,
+            quantity:quantity,
+            message:message,
+            totalPrice: totalPrice,
+            status:"pending"
+
+         }
+         fetch('http://localhost:3000/bids',{
+            method:'POST',
+            headers:{
+                'content-type':"application/json"
+            },
+            body:JSON.stringify(newBid)
+         })
+         .then(res=>res.json())
+         .then(data=>{
+            if(data.insertedId){
+               Swal.fire({
+  title: "Are you sure?",
+  text: "You will be able to submit this!",
+  icon: "warning",
+  showCancelButton: true,
+  confirmButtonColor: "#3085d6",
+  cancelButtonColor: "#d33",
+  confirmButtonText: "Yes, Submit it!"
+}).then((result) => {
+  if (result.isConfirmed) {
+    Swal.fire({
+      title: "Submit!",
+      text: "Your file has been Sumbit.",
+      icon: "success"
+    });
+  }
+}); 
+       //add the new bid to the state
+       newBid._id=data.insertedId;
+       const newBids =[...bids,newBid]
+       newBids.sort((a,b)=>b.quantity-a.quantity)
+       setBids(newBids)
+       e.target.reset();
+        setQuantity(0);
+        setMessage("");
+            }
+            else{
+              toast.error("Bid not saved!");  
+            }
+            console.log('after placing bid',data)
+         })
+    }
 
   return (
     <div className='max-w-11/12 mx-auto my-5 sm:my-10'>
@@ -80,18 +134,33 @@ const buttonClick=()=>{
 
       <div>
         <div>
-            <h1 className=' text-3xl text-center mt-4 font-bold'>Book Consulation</h1>
+            <h1 className=' text-3xl text-center mt-4 font-bold'>Crops Consulation</h1>
             <div className='mt-4 flex justify-center'>
                 <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
   
-  <form onSubmit={handleForm}>
+  <form onSubmit={handleBidSubmit}>
   <label className="label">Name</label>
-  <input type="text" className="input" placeholder="Enter you name" />
+  <input type="text" className="input" name='name' defaultValue={user.displayName} />
 
   <label className="label">Email</label>
-  <input type="email" className="input" placeholder="email" />
+  <input type="email" className="input" name='email' defaultValue={user.email} />
+  <label className="label">Quantity</label>
+  <input type="number" className="input" name='quantity' placeholder='Quantity Number' value={quantity}
+        onChange={(e) => setQuantity(Number(e.target.value))} />
 
-  <button onClick={buttonClick} className="btn w-full btn-outline border-green-800 hover:bg-green-800 hover:text-white mt-4">Book Now</button>
+    <label className="label">Message</label>
+      <input
+        type="text"
+        className="input"
+        placeholder="Enter your Message" name='message'
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+      />
+
+  <label className="label">Total Price</label>
+  <input type="number" className="input" value={totalPrice} readOnly/>
+
+  <button  className="btn w-full btn-outline border-green-800 hover:bg-green-800 hover:text-white mt-4">Submit</button>
   </form>
 
 </fieldset>

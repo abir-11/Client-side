@@ -13,6 +13,8 @@ import AllCrops from './Layout/All-Crops/AllCrops.jsx';
 import CropsDetails from './Layout/CropsDetails/CropsDetails.jsx';
 import Error from './Layout/All-Crops/Error.jsx';
 import ErrorPage from './Layout/ErrorPage/ErrorPage.jsx';
+import Profile from './Layout/MyProfile/Profile.jsx';
+import AddCrop from './Layout/AddCrop/AddCrop.jsx';
 
 
 
@@ -50,7 +52,14 @@ const router=createBrowserRouter([
         path:'/error',
         Component:Error
       },
-     
+     {
+      path:'/profile',
+      Component:Profile
+     },
+     {
+      path:'/addCrop',
+      Component:AddCrop
+     }
       
     ]
   }

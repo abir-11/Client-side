@@ -1,14 +1,12 @@
 import React from 'react';
 import { use } from 'react';
-import { Link } from 'react-router';
-import { useLocation } from 'react-router';
-import { useNavigate } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useState } from 'react';
 import { useRef } from 'react';
 import { sendPasswordResetEmail } from 'firebase/auth';
-import { AuthContext } from '../../Context/AuthContext/AuthContext';
 import { auth } from './../../Firebase/Firebase.init';
+import { AuthContext } from './../../Context/AuthContext/AuthContext';
 
 const Login = () => {
     const {SingInUser, signInWithGoogle}=use(AuthContext);
@@ -33,7 +31,7 @@ const Login = () => {
            event.preventDefault();
     const email=event.target.email.value;
     const password=event.target.password.value;
-    SingInUser(email,password)
+   SingInUser(email,password)
     .then((result)=>{
       console.log(result.user)
       //event.target.reset()
@@ -77,10 +75,10 @@ const Login = () => {
           <label className="label">Password</label>
            <div className='relative'>
                       <input type={showpassword?"text":"password"}  className="input" name='password' placeholder="Password" />
-                      <button onClick={handleShowPassWorded} className="  absolute right-4 top-3 px-4  ">{showpassword?<FaEyeSlash/>:<FaEye/>}</button>
+                      <button type='button' onClick={handleShowPassWorded} className="  absolute right-4 top-3 px-4  ">{showpassword?<FaEyeSlash/>:<FaEye/>}</button>
                     </div>
           <div onClick={handleForgetPass}><a className="link link-hover">Forgot password?</a></div>
-          <button className="btn btn-neutral mt-4">Login</button>
+          <button type='submit' className="btn btn-neutral mt-4">Login</button>
         </fieldset>
         </form>
         <div>
