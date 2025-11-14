@@ -12,7 +12,6 @@ const Myposts = () => {
   const modalRef = useRef(null);
   const [editingCrop, setEditingCrop] = useState(null);
 
-  // Filter user's own crops once loaded
   useEffect(() => {
     if (loadedData && user?.email) {
       const myCrops = loadedData.filter(
@@ -109,7 +108,7 @@ const Myposts = () => {
         My Posts
       </h1>
 
-      {/* Desktop Table */}
+   
       <div className="hidden md:block overflow-x-auto">
         <table className="table table-zebra w-full">
           <thead className="bg-green-200 text-sm md:text-base">
@@ -135,7 +134,7 @@ const Myposts = () => {
                   <div>
                     <p className="font-bold">{datas.name}</p>
                     <p className="text-xs opacity-70">
-                      pricePerUnit: {datas.pricePerUnit}/kg | Quantity: {datas.quantity}
+                      pricePerUnit: {datas.pricePerUnit} tk | Quantity: {datas.quantity} kg
                     </p>
                   </div>
                 </td>
@@ -162,7 +161,7 @@ const Myposts = () => {
         </table>
       </div>
 
-      {/* Mobile Cards */}
+     
       <div className="md:hidden flex flex-col gap-3">
         {crops.map((datas, index) => (
           <div key={datas._id || index} className="bg-green-50 p-3 rounded-lg shadow">
@@ -178,7 +177,7 @@ const Myposts = () => {
                   Type: {datas.type} | {datas.location}
                 </p>
                 <p className="text-xs">
-                  pricePerUnit: {datas.pricePerUnit}/kg | Quantity: {datas.quantity}
+                  pricePerUnit: {datas.pricePerUnit} tk | Quantity: {datas.quantity} kg
                 </p>
               </div>
             </div>
@@ -207,7 +206,7 @@ const Myposts = () => {
         ))}
       </div>
 
-      {/* Modal */}
+    
       <dialog ref={modalRef} className="modal modal-middle">
         <div className="modal-box max-w-md">
           <h1 className="text-2xl font-bold text-center mb-4">Edit Crop</h1>

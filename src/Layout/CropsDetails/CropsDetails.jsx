@@ -74,12 +74,18 @@ const CropsDetails = () => {
 
     const interest = {
       cropId: crop._id,
+      cropName:crop.name,
       userEmail: user?.email,
       userName: user?.displayName || "User",
       quantity: quantity,
       message: message,
       totalPrice: totalPrice,
       status: "pending",
+      owner:{
+        ownerName:crop.owner.ownerName,
+        ownerEmail:crop.owner.ownerEmail
+
+      }
     };
 
     Swal.fire({
@@ -165,11 +171,14 @@ const CropsDetails = () => {
             <h1 className="font-bold text-2xl sm:text-3xl text-[#001931]">
               {crop.name}
             </h1>
-            {isOwner && (
+            {isOwner ? (
               <span className="inline-block bg-green-100 text-green-800 text-sm px-2 py-1 rounded mt-2">
                 Your Crop
               </span>
-            )}
+            ) :<span  className="inline-block bg-green-100 text-green-800 text-sm px-2 py-1 rounded mt-2">
+              {crop.owner.ownerName} <br />
+              {crop.owner.ownerEmail}
+              </span>}
           </div>
 
           <div className="my-4 sm:my-7 flex gap-10 items-center">
@@ -177,7 +186,7 @@ const CropsDetails = () => {
               <ul>
                 <li className="text-[#001931]">Price Per Unit</li>
                 <li className="font-extrabold text-xl sm:text-2xl md:text-4xl text-[#001931]">
-                  ${crop.pricePerUnit}/kg
+                  {crop.pricePerUnit} tk
                 </li>
               </ul>
             </div>
@@ -212,7 +221,7 @@ const CropsDetails = () => {
       </div>
       {!isOwner && !isAlreadyInterested && (
         <div>
-          <h1 className="text-3xl text-center mt-4 font-bold">Express Interest</h1>
+          <h1 className="text-3xl text-center mt-4 font-bold">Interest Form</h1>
           <div className="mt-4 flex justify-center">
             <fieldset className="fieldset border-base-300 rounded-box w-full max-w-md border p-4 bg-base-200">
               <form onSubmit={handleSubmit}>
@@ -255,7 +264,7 @@ const CropsDetails = () => {
                   <input
                     type="text"
                     className="input input-bordered w-full bg-gray-100"
-                    value={`$${crop.pricePerUnit}/kg`}
+                    value={`${crop.pricePerUnit} tk`}
                     readOnly
                   />
                 </div>
@@ -272,9 +281,7 @@ const CropsDetails = () => {
                     onChange={handleQuantity}
                     required
                   />
-                  <div className="text-sm text-gray-600 mt-1">
-                    Available: {crop.quantity} kg
-                  </div>
+                
                 </div>
 
                 <div className="mb-4">
@@ -282,7 +289,7 @@ const CropsDetails = () => {
                   <input
                     type="text"
                     className="input input-bordered w-full bg-green-50 font-bold"
-                    value={`$${calculatedPrice}`}
+                    value={`${calculatedPrice} tk`}
                     readOnly
                   />
                 </div>

@@ -1,123 +1,269 @@
-import React, { useContext, useEffect, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
-import { AuthContext } from './../../Context/AuthContext/AuthContext';
+import React, { useContext, useEffect, useState } from 'react';
+import { AuthContext } from '../../Context/AuthContext/AuthContext';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const MyInterests = () => {
   const { user, loading } = useContext(AuthContext);
   const [interests, setInterests] = useState([]);
-  const [sortOption, setSortOption] = useState("newest");
-  const [fetchLoading, setFetchLoading] = useState(true);
+  const [filteredInterests, setFilteredInterests] = useState([]);
+  const [statusFilter, setStatusFilter] = useState('all');
 
-  // Load user interests
   useEffect(() => {
-    const fetchInterests = async () => {
-      if (user?.email) {
-        try {
-          setFetchLoading(true);
-          const response = await fetch(`http://localhost:3000/interests?userEmail=${user.email}`);
-          
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          
-          const data = await response.json();
-          
-          // Ensure data is an array before setting state
-          if (Array.isArray(data)) {
-            setInterests(data);
-          } else {
-            console.error('Expected array but got:', data);
-            setInterests([]);
-            toast.error("Unexpected data format received");
-          }
-        } catch (error) {
-          console.error('Failed to fetch interests:', error);
-          setInterests([]);
-          toast.error("Failed to load interests");
-        } finally {
-          setFetchLoading(false);
-        }
-      }
-    };
-
-    fetchInterests();
+    if (user?.email) {
+      fetchInterests();
+    }
   }, [user?.email]);
 
-  if (loading || fetchLoading) {
-    return <p className="text-center text-lg text-green-600">Loading...</p>;
+  const fetchInterests = () => {
+    fetch(`http://localhost:3000/interests/user/${user.email}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setInterests(data);
+        setFilteredInterests(data);
+      })
+      
+  };
+
+  useEffect(() => {
+    if (statusFilter === 'all') {
+      setFilteredInterests(interests);
+    } else {
+      setFilteredInterests(interests.filter(interest => interest.status === statusFilter));
+    }
+  }, [statusFilter, interests]);
+
+  const statusClass = (status) => {
+    switch (status) {
+      case 'accepted':
+        return 'badge badge-success text-white text-xs';
+      case 'rejected':
+        return 'badge badge-error text-white text-xs';
+      case 'pending':
+        return 'badge badge-warning text-white text-xs';
+      default:
+        return 'badge badge-ghost text-xs';
+    }
+  };
+
+  const handleStatusFilter = (status) => {
+    setStatusFilter(status);
+  };
+
+  if (loading) {
+    return <p className="text-center text-lg text-green-600 mt-8">Loading...</p>;
   }
 
-  // Safe sorting function with array check
-  const sortedInterests = Array.isArray(interests) 
-    ? [...interests].sort((a, b) => {
-        if (sortOption === "newest") {
-          return new Date(b.createdAt) - new Date(a.createdAt);
-        }
-        if (sortOption === "oldest") {
-          return new Date(a.createdAt) - new Date(b.createdAt);
-        }
-        if (sortOption === "status") {
-          return a.status.localeCompare(b.status);
-        }
-        return 0;
-      })
-    : [];
-
   return (
-    <div className="max-w-6xl mx-auto my-10 p-5 border rounded-xl shadow-md bg-white">
-      <h2 className="text-3xl font-bold text-green-700 mb-5">My Interests</h2>
+    <div className="min-h-screen bg-gray-50 py-4 sm:py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
+       
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">My Interests</h1>
+        </div>
+        <div className="flex flex-wrap justify-center gap-1 sm:gap-2 mb-4 sm:mb-6 px-2">
+          <button
+            onClick={() => handleStatusFilter('all')}
+            className={`btn btn-xs sm:btn-sm ${statusFilter === 'all' ? 'btn-primary' : 'btn-outline'}`}
+          >
+            All ({interests.length})
+          </button>
+          <button
+            onClick={() => handleStatusFilter('pending')}
+            className={`btn btn-xs sm:btn-sm ${statusFilter === 'pending' ? 'btn-warning' : 'btn-outline'}`}
+          >
+            Pending ({interests.filter(i => i.status === 'pending').length})
+          </button>
+          <button
+            onClick={() => handleStatusFilter('accepted')}
+            className={`btn btn-xs sm:btn-sm ${statusFilter === 'accepted' ? 'btn-success' : 'btn-outline'}`}
+          >
+            Accepted ({interests.filter(i => i.status === 'accepted').length})
+          </button>
+          <button
+            onClick={() => handleStatusFilter('rejected')}
+            className={`btn btn-xs sm:btn-sm ${statusFilter === 'rejected' ? 'btn-error' : 'btn-outline'}`}
+          >
+            Rejected ({interests.filter(i => i.status === 'rejected').length})
+          </button>
+        </div>
 
-      {/* Sorting */}
-      <div className="flex justify-end mb-4">
-        <label className="font-semibold mr-2">Sort By:</label>
-        <select
-          className="border p-2 rounded-md"
-          value={sortOption}
-          onChange={(e) => setSortOption(e.target.value)}
-        >
-          <option value="newest">Newest First</option>
-          <option value="oldest">Oldest First</option>
-          <option value="status">Status</option>
-        </select>
+
+        <div className="block sm:hidden">
+          {filteredInterests.length > 0 ? (
+            <div className="space-y-3">
+              {filteredInterests.map((interest) => (
+                <div key={interest._id} className="bg-white rounded-lg shadow p-4 border">
+                  <div className="flex justify-between items-start mb-3">
+                    <h3 className="font-semibold text-gray-900 text-sm truncate flex-1 mr-2">
+                      {interest.owner.cropName || 'N/A'}
+                    </h3>
+                    <span className={`px-2 py-1 text-xs font-semibold rounded-full flex-shrink-0 ${statusClass(interest.status)}`}>
+                      {interest.status?.charAt(0).toUpperCase() + interest.status?.slice(1) || 'Pending'}
+                    </span>
+                  </div>
+
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Owner:</span>
+                      <span className="text-gray-900 font-medium text-right">
+                        {interest.owner.ownerName || 'Unknown'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Quantity:</span>
+                      <span className="text-gray-900">{interest.quantity} kg</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-500">Total Price:</span>
+                      <span className="text-green-600 font-semibold">
+                        {interest.totalPrice || (interest.quantity * (interest.pricePerUnit || 0))}/tk
+                      </span>
+                    </div>
+                   
+                    <div>
+                      <span className="text-gray-500 block mb-1">Message:</span>
+                      <p className="text-gray-900 text-sm bg-gray-50 p-2 rounded truncate">
+                        {interest.message}
+                      </p>
+                     
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <div className="text-gray-400 mb-4">
+                <svg className="mx-auto h-16 w-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No interests found</h3>
+              <p className="text-gray-500 px-4">
+                {statusFilter === 'all'
+                  ? "You haven't expressed interest in any crops yet."
+                  : `No ${statusFilter} interests found.`
+                }
+              </p>
+            </div>
+          )}
+        </div>
+        <div className="hidden sm:block bg-white rounded-lg shadow overflow-hidden">
+          {filteredInterests.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Crop Name
+                    </th>
+                    <th className="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Crop Owner
+                    </th>
+                    <th className="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Quantity
+                    </th>
+                    <th className="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Total Price
+                    </th>
+                    <th className="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Message
+                    </th>
+                    <th className="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                   
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredInterests.map((interest) => (
+                    <tr key={interest._id} className="hover:bg-gray-50">
+                      <td className="px-4 lg:px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">
+                          {interest.cropName || 'N/A'}
+                        </div>
+                      </td>
+                      <td className="px-4 lg:px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">
+                          {interest.owner.ownerName || 'Unknown'}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {interest.owner.ownerEmail || 'N/A'}
+                        </div>
+                      </td>
+                      <td className="px-4 lg:px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">
+                          {interest.quantity} kg
+                        </div>
+                      </td>
+                      <td className="px-4 lg:px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-semibold text-green-600">
+                          ${interest.totalPrice || (interest.quantity * (interest.pricePerUnit || 0))}
+                        </div>
+                      </td>
+                      <td className="px-4 lg:px-6 py-4">
+                        <div className="text-sm text-gray-900 max-w-xs truncate">
+                          {interest.message}
+                        </div>
+                       
+                      </td>
+                      <td className="px-4 lg:px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusClass(interest.status)}`}>
+                          {interest.status?.charAt(0).toUpperCase() + interest.status?.slice(1) || 'Pending'}
+                        </span>
+                      </td>
+                     
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <div className="text-gray-400 mb-4">
+                <svg className="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No interests found</h3>
+              <p className="text-gray-500 max-w-sm mx-auto">
+                {statusFilter === 'all'
+                  ? "You haven't expressed interest in any crops yet."
+                  : `No ${statusFilter} interests found.`
+                }
+              </p>
+            </div>
+          )}
+        </div>
+
+        {interests.length > 0 && (
+          <div className="mt-6 sm:mt-8 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div className="bg-white rounded-lg shadow p-3 sm:p-4 text-center">
+              <div className="text-xl sm:text-2xl font-bold text-gray-900">{interests.length}</div>
+              <div className="text-xs sm:text-sm text-gray-500">Total Interests</div>
+            </div>
+            <div className="bg-white rounded-lg shadow p-3 sm:p-4 text-center">
+              <div className="text-xl sm:text-2xl font-bold text-yellow-600">
+                {interests.filter(i => i.status === 'pending').length}
+              </div>
+              <div className="text-xs sm:text-sm text-gray-500">Pending</div>
+            </div>
+            <div className="bg-white rounded-lg shadow p-3 sm:p-4 text-center">
+              <div className="text-xl sm:text-2xl font-bold text-green-600">
+                {interests.filter(i => i.status === 'accepted').length}
+              </div>
+              <div className="text-xs sm:text-sm text-gray-500">Accepted</div>
+            </div>
+            <div className="bg-white rounded-lg shadow p-3 sm:p-4 text-center">
+              <div className="text-xl sm:text-2xl font-bold text-red-600">
+                {interests.filter(i => i.status === 'rejected').length}
+              </div>
+              <div className="text-xs sm:text-sm text-gray-500">Rejected</div>
+            </div>
+          </div>
+        )}
       </div>
-
-      {sortedInterests.length === 0 ? (
-        <p className="text-gray-600">No interests sent yet.</p>
-      ) : (
-        <table className="table w-full border">
-          <thead>
-            <tr className="bg-gray-100">
-              <th>Crop Name</th>
-              <th>Owner</th>
-              <th>Quantity</th>
-              <th>Message</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sortedInterests.map((i) => (
-              <tr key={i._id}>
-                <td>{i.userName}</td>
-                <td>{i.userEmail}</td>
-                <td>{i.quantity}</td>
-                <td>{i.message}</td>
-                <td
-                  className={`font-semibold ${
-                    i.status === "accepted"
-                      ? "text-green-600"
-                      : i.status === "rejected"
-                      ? "text-red-600"
-                      : "text-yellow-600"
-                  }`}
-                >
-                  {i.status}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-
       <ToastContainer />
     </div>
   );
