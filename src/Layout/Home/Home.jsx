@@ -15,11 +15,14 @@ import Marquee from "react-fast-marquee";
 import { FaMinus, FaPlus } from "react-icons/fa";
 import { useState } from 'react';
 import { FaQuoteLeft, FaStar, FaRegCommentDots } from "react-icons/fa";
+import { use } from 'react';
+import { AuthContext } from './../../Context/AuthContext/AuthContext';
 
 
 const krishiPromise=fetch('http://localhost:3000/latest-krishiCard')
 .then(res=>res.json());
 const Home = () => {
+    const {loading}=use(AuthContext)
     const [openIndex, setOpenIndex] = useState(0);
     const faqs = [
     {
@@ -43,6 +46,9 @@ const Home = () => {
         "Yes! Our platform is completely free for users who want to learn, share, and grow together.",
     },
   ];
+         if (loading) {
+    return <p className="text-center text-lg text-green-600">Loading...</p>;
+  }
 
     return (
         <div>
