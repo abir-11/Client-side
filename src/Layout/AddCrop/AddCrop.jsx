@@ -68,19 +68,19 @@ const AddCrop = () => {
                 icon: "success",
               });
 
-              // Add the new crop to the state
+              
               cropData._id = data.insertedId;
               const newCrops = [...crops, cropData];
               newCrops.sort((a, b) => b.quantity - a.quantity);
               setCrops(newCrops);
               form.reset();
             } else {
-              toast.error("Crop not saved!");
+              toast("Crop not saved!");
             }
           })
           .catch((error) => {
-            console.error("Error adding crop:", error);
-            toast.error("An error occurred while adding the crop!");
+           
+            toast("An error occurred while adding the crop!",error);
           });
       }
     });

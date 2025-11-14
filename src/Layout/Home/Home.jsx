@@ -52,7 +52,7 @@ const Home = () => {
   }
 
     return (
-        <div>
+        <div className='min-h-screen'>
             {/* hero section */}
            <div>
              <Swiper
@@ -197,7 +197,7 @@ const Home = () => {
                 
             </div>
                  <div className='flex justify-center mt-10 '>
-                  <Link to='/allCrops'><button className="btn mx-auto btn-outline hover:scale-105 transition  ease-in-out border-green-800 bg-green-800 text-white">Success</button></Link>
+                  <Link to='/allCrops'><button className="btn mx-auto btn-outline hover:scale-105 transition  ease-in-out border-green-800 bg-green-800 text-white">View All</button></Link>
                  </div>
             <div>
                   <section className="py-16 ">

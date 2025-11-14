@@ -11,6 +11,8 @@ const CropsDetails = () => {
   const [calculatedPrice, setCalculatedPrice] = useState(0);
   const [isAlreadyInterested, setIsAlreadyInterested] = useState(false);
   const [interests, setInterests] = useState([]);
+  const [quantityUpdate, setQuantityUpdate] = useState(crop);
+
 
   const isOwner = user?.email === crop.owner?.ownerEmail;
 
@@ -74,16 +76,16 @@ const CropsDetails = () => {
 
     const interest = {
       cropId: crop._id,
-      cropName:crop.name,
+      cropName: crop.name,
       userEmail: user?.email,
       userName: user?.displayName || "User",
       quantity: quantity,
       message: message,
       totalPrice: totalPrice,
       status: "pending",
-      owner:{
-        ownerName:crop?.owner?.ownerName,
-        ownerEmail:crop?.owner?.ownerEmail
+      owner: {
+        ownerName: crop?.owner?.ownerName,
+        ownerEmail: crop?.owner?.ownerEmail
 
       }
     };
@@ -126,15 +128,23 @@ const CropsDetails = () => {
             }
           })
           .catch((error) => {
-            console.error("Error submitting interest:", error);
-            toast.error("An error occurred while submitting!");
+            toast("An error occurred while submitting!", error);
           });
       }
     });
   };
 
-  const handleInterest = (interestId, action) => {
-    fetch(`https://my-krishilink.vercel.app/interests/${interestId}`, {
+  const handleInterest = (id, action) => {
+    console.log(interests)
+    console.log(id, action)
+  
+    // const interest = interests.find(i => i._id === interestId);
+    // let newQuantitys = interest.quantity;
+    // if (action === "accepted") {
+    //   newQuantitys = interest.quantity - quantityUpdate.quantity
+    // }
+
+    fetch(`https://my-krishilink.vercel.app/api/interests/${id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -143,16 +153,17 @@ const CropsDetails = () => {
     })
       .then((res) => res.json())
       .then(() => {
-        toast.success(`Interest ${action} successfully!`);
+        toast(`Interest ${action} successfully!`);
+       // setQuantityUpdate({ ...quantityUpdate })
         setInterests(
           interests.map((interest) =>
-            interest._id === interestId
+            interest._id === id
               ? { ...interest, status: action }
               : interest
           )
         );
       })
-      .catch(() => toast.error("Failed to update interest"));
+      .catch(() => toast("Failed to update interest"));
   };
 
   return (
@@ -175,11 +186,11 @@ const CropsDetails = () => {
               <span className="inline-block bg-green-100 text-green-800 text-sm px-2 py-1 rounded mt-2">
                 Your Crop
               </span>
-            ):<span  className="inline-block bg-green-100 text-green-800 text-sm px-2 py-1 rounded mt-2">
-              {crop?.owner?.ownerName ||  "Unknown Owner" } <br />
+            ) : <span className="inline-block bg-green-100 text-green-800 text-sm px-2 py-1 rounded mt-2">
+              {crop?.owner?.ownerName || "Unknown Owner"} <br />
               {crop?.owner?.ownerEmail || "No Email Available"}
-              </span>}
-              
+            </span>}
+
           </div>
 
           <div className="my-4 sm:my-7 flex gap-10 items-center">
@@ -282,7 +293,7 @@ const CropsDetails = () => {
                     onChange={handleQuantity}
                     required
                   />
-                
+
                 </div>
 
                 <div className="mb-4">
@@ -351,13 +362,12 @@ const CropsDetails = () => {
                       <td>${interest.totalPrice}</td>
                       <td>
                         <span
-                          className={`badge ${
-                            interest.status === "accepted"
+                          className={`badge ${interest.status === "accepted"
                               ? "badge-success"
                               : interest.status === "rejected"
-                              ? "badge-error"
-                              : "badge-warning"
-                          }`}
+                                ? "badge-error"
+                                : "badge-warning"
+                            }`}
                         >
                           {interest.status}
                         </span>
@@ -367,13 +377,13 @@ const CropsDetails = () => {
                           <div className="flex gap-2">
                             <button
                               onClick={() => handleInterest(interest._id, "accepted")}
-                              className="btn btn-sm btn-success"
+                              className="btn btn-outline btn-sm border-green-800 hover:bg-green-800 hover:text-white"
                             >
                               Accept
                             </button>
                             <button
                               onClick={() => handleInterest(interest._id, "rejected")}
-                              className="btn btn-sm btn-error"
+                              className="btn btn-outline btn-sm border-red-800 hover:bg-red-700 hover:text-white"
                             >
                               Reject
                             </button>

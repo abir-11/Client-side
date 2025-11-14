@@ -50,7 +50,7 @@ const AllCrops = () => {
   }
 
   return (
-    <div>
+    <div className='min-h-screen'>
       <div className='w-11/12 mx-auto'>
         <h3 className='text-center text-xl sm:text-4xl text-gray-600'>
           We Are Different From Other Farming
