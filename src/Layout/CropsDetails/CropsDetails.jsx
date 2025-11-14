@@ -1,366 +1,375 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { useLoaderData } from "react-router";
+import { AuthContext } from "./../../Context/AuthContext/AuthContext";
 import Swal from "sweetalert2";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { AuthContext } from './../../Context/AuthContext/AuthContext';
 
-const CropDetails = () => {
+const CropsDetails = () => {
   const crop = useLoaderData();
   const { user, loading } = useContext(AuthContext);
-
-  const [quantity, setQuantity] = useState(1); // ✅ Default 1 instead of 0
-  const [message, setMessage] = useState("");
-  const [interests, setInterests] = useState([]);
+  const [calculatedPrice, setCalculatedPrice] = useState(0);
   const [isAlreadyInterested, setIsAlreadyInterested] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false); // ✅ Loading state for form
+  const [interests, setInterests] = useState([]);
 
-  const totalPrice = quantity * crop.pricePerUnit;
   const isOwner = user?.email === crop.owner?.ownerEmail;
 
   useEffect(() => {
-    if (!crop?._id || !user?.email) return;
-    
-    fetch(`http://localhost:3000/interests/${crop._id}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setInterests(data || []);
-        const already = data?.some((i) => i.userEmail === user?.email);
-        setIsAlreadyInterested(already);
-      })
-      .catch(() => toast.error("Failed to load interests"));
-  }, [crop._id, user?.email]);
+    if (user?.email) {
+      fetch(`http://localhost:3000/interests/${crop._id}`)
+        .then((res) => res.json())
+        .then((data) => {
+          const userInterest = data.find(
+            (interest) => interest.userEmail === user.email
+          );
+          setIsAlreadyInterested(!!userInterest);
+          if (isOwner) {
+            setInterests(data);
+          }
+        })
+        .catch(() => toast.error("Failed to load interests"));
+    }
+  }, [crop._id, user?.email, isOwner]);
 
-  if (loading) return <p className="text-center text-lg text-green-600">Loading...</p>;
+  if (loading) {
+    return <p className="text-center text-lg text-green-600">Loading...</p>;
+  }
 
-  // Handle interest submission
-  const handleSubmitInterest = async (e) => {
+  const handleQuantity = (e) => {
+    const quantity = parseInt(e.target.value) || 0;
+    const totalPrice = crop.pricePerUnit * quantity;
+    setCalculatedPrice(totalPrice);
+  };
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-    
-    if (quantity < 1) {
-      toast.error("Quantity must be at least 1!");
+
+    if (isOwner) {
+      toast.error("You cannot express interest in your own crop!");
+      return;
+    }
+
+    if (isAlreadyInterested) {
+      toast.error("You have already submitted an interest for this crop!");
+      return;
+    }
+
+    const form = e.target;
+    const quantity = parseInt(form.quantity.value);
+    const message = form.description.value;
+
+    if (quantity <= 0) {
+      toast.error("Please enter a valid quantity!");
       return;
     }
 
     if (quantity > crop.quantity) {
-      toast.error(`Quantity cannot exceed available ${crop.quantity} ${crop.unit}`);
+      toast.error(
+        `Requested quantity exceeds available stock (${crop.quantity} kg)`
+      );
       return;
     }
 
-    const newInterest = {
+    const totalPrice = crop.pricePerUnit * quantity;
+
+    const interest = {
       cropId: crop._id,
-      userEmail: user.email,
-      userName: user.displayName,
-      quantity,
-      message,
+      userEmail: user?.email,
+      userName: user?.displayName || "User",
+      quantity: quantity,
+      message: message,
+      totalPrice: totalPrice,
       status: "pending",
     };
 
-    try {
-      const result = await Swal.fire({
-        title: "Confirm Interest Request",
-        html: `
-          <div class="text-left">
-            <p><strong>Crop:</strong> ${crop.name}</p>
-            <p><strong>Quantity:</strong> ${quantity} ${crop.unit}</p>
-            <p><strong>Total Price:</strong> ৳${totalPrice}</p>
-            <p><strong>Message:</strong> ${message || "No message"}</p>
-          </div>
-        `,
-        icon: "question",
-        showCancelButton: true,
-        confirmButtonText: "Send Interest",
-        cancelButtonText: "Cancel",
-      });
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You want to submit this interest?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Submit it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch("http://localhost:3000/interests", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(interest),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            console.log("Server response:", data);
 
-      if (!result.isConfirmed) return;
+            if (data.insertedId) {
+              Swal.fire({
+                title: "Submitted!",
+                text: "Your interest has been submitted successfully.",
+                icon: "success",
+              });
 
-      setIsSubmitting(true);
-
-      const response = await fetch("http://localhost:3000/interests", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newInterest),
-      });
-
-      const data = await response.json();
-
-      if (data.insertedId || data.modifiedCount > 0) {
-        toast.success("Interest sent successfully!");
-        setIsAlreadyInterested(true);
-        setInterests((prev) => [...prev, { 
-          _id: data.insertedId || new Date().getTime(), 
-          ...newInterest 
-        }]);
-        // ✅ Reset form
-        setQuantity(1);
-        setMessage("");
-      } else {
-        toast.error("Failed to send interest!");
+              setIsAlreadyInterested(true);
+              form.reset();
+              setCalculatedPrice(0);
+            } else if (data.message) {
+              toast.error(data.message);
+            } else {
+              toast.error("Failed to submit interest!");
+            }
+          })
+          .catch((error) => {
+            console.error("Error submitting interest:", error);
+            toast.error("An error occurred while submitting!");
+          });
       }
-    } catch (error) {
-      toast.error("Server error!");
-    } finally {
-      setIsSubmitting(false);
-    }
+    });
   };
 
-  // Handle Accept/Reject for owner
-  const handleStatusChange = async (interestId, status, interestQty) => {
-    try {
-      const result = await Swal.fire({
-        title: `Are you sure you want to ${status} this interest?`,
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: `Yes, ${status}`,
-        cancelButtonText: "Cancel",
-      });
-
-      if (!result.isConfirmed) return;
-
-      const response = await fetch(`http://localhost:3000/interests/status`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ interestId, cropsId: crop._id, status }),
-      });
-
-      const data = await response.json();
-
-      if (data.modifiedCount > 0) {
-        toast.success(`Interest ${status} successfully!`);
-        setInterests((prev) => 
-          prev.map((i) => (i._id === interestId ? { ...i, status } : i))
+  const handleInterest = (interestId, action) => {
+    fetch(`http://localhost:3000/interests/${interestId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ status: action }),
+    })
+      .then((res) => res.json())
+      .then(() => {
+        toast.success(`Interest ${action} successfully!`);
+        setInterests(
+          interests.map((interest) =>
+            interest._id === interestId
+              ? { ...interest, status: action }
+              : interest
+          )
         );
-      } else {
-        toast.error("Failed to update interest");
-      }
-    } catch (error) {
-      toast.error("Server error!");
-    }
+      })
+      .catch(() => toast.error("Failed to update interest"));
   };
 
   return (
-    <div className="max-w-5xl mx-auto my-10 p-5 border rounded-xl shadow-md bg-white">
-      {/* Crop Info - Improved UI */}
-      <div className="flex flex-col lg:flex-row gap-8 border-b pb-8">
-        <div className="flex-shrink-0">
-          <img 
-            src={crop.image} 
-            alt={crop.name} 
-            className="w-full lg:w-80 h-80 object-cover rounded-2xl border shadow-lg"
+    <div className="max-w-11/12 mx-auto my-5 sm:my-10">
+      <div className="flex gap-10 flex-col sm:flex-row justify-center sm:items-center border-b border-gray-300 pb-10">
+        <div>
+          <img
+            src={crop.image}
+            alt={crop.name}
+            className="w-[316px] mx-auto h-[316px] overflow-hidden object-cover rounded-2xl bg-[#F1F5E8]"
           />
         </div>
-        <div className="flex-1">
-          <div className="flex items-start justify-between mb-4">
-            <h1 className="font-bold text-3xl text-gray-800">{crop.name}</h1>
-            <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-              {crop.type}
-            </span>
+
+        <div>
+          <div className="border-b border-gray-300">
+            <h1 className="font-bold text-2xl sm:text-3xl text-[#001931]">
+              {crop.name}
+            </h1>
+            {isOwner && (
+              <span className="inline-block bg-green-100 text-green-800 text-sm px-2 py-1 rounded mt-2">
+                Your Crop
+              </span>
+            )}
           </div>
-          
-          <p className="text-gray-600 mb-6 leading-relaxed">{crop.description}</p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                <span className="text-green-600 font-bold">৳</span>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Price per unit</p>
-                <p className="font-semibold">{crop.pricePerUnit} ৳/{crop.unit}</p>
-              </div>
+
+          <div className="my-4 sm:my-7 flex gap-10 items-center">
+            <div>
+              <ul>
+                <li className="text-[#001931]">Price Per Unit</li>
+                <li className="font-extrabold text-xl sm:text-2xl md:text-4xl text-[#001931]">
+                  ${crop.pricePerUnit}/kg
+                </li>
+              </ul>
             </div>
-            
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                <span className="text-blue-600 font-bold">📦</span>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Available Quantity</p>
-                <p className="font-semibold">{crop.quantity} {crop.unit}</p>
-              </div>
+
+            <div>
+              <ul>
+                <li className="text-[#001931]">Available Quantity</li>
+                <li className="font-extrabold text-xl sm:text-2xl md:text-4xl text-[#001931]">
+                  {crop.quantity} kg
+                </li>
+              </ul>
             </div>
-            
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
-                <span className="text-orange-600 font-bold">📍</span>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Location</p>
-                <p className="font-semibold">{crop.location}</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                <span className="text-purple-600 font-bold">👤</span>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Owner</p>
-                <p className="font-semibold">{crop.owner?.ownerName}</p>
-                <p className="text-xs text-gray-400">{crop.owner?.ownerEmail}</p>
-              </div>
+
+            <div>
+              <ul>
+                <li className="text-[#001931]">Type</li>
+                <li className="font-extrabold text-xl sm:text-2xl md:text-4xl text-[#001931]">
+                  {crop.type}
+                </li>
+              </ul>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Interest Form */}
-      {!isOwner && (
-        <div className="mt-8">
-          <h2 className="text-2xl font-semibold mb-6 text-green-800 border-l-4 border-green-600 pl-3">
-            Send Interest
-          </h2>
-          
-          {isAlreadyInterested ? (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <span className="text-green-600 text-xl">✓</span>
-              </div>
-              <p className="text-green-800 font-medium text-lg mb-2">
-                You've already sent an interest for this crop
-              </p>
-              <p className="text-green-600">
-                Your interest is currently under review by the owner
-              </p>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmitInterest} className="border border-gray-200 p-6 rounded-lg bg-gray-50 shadow-sm">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block font-semibold mb-2 text-gray-700">Quantity</label>
-                  <input
-                    type="number"
-                    className="input input-bordered w-full focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                    value={quantity}
-                    min="1"
-                    max={crop.quantity}
-                    onChange={(e) => setQuantity(Number(e.target.value))}
-                    required
-                  />
-                  <p className="text-sm text-gray-500 mt-1">
-                    Available: {crop.quantity} {crop.unit}
-                  </p>
-                </div>
-
-                <div>
-                  <label className="block font-semibold mb-2 text-gray-700">Total Price</label>
+      <div className="my-5">
+        <h3 className="text-xl sm:text-2xl font-semibold text-[#001931] mb-4">
+          Description
+        </h3>
+        <p className="text-base sm:text-xl sm:leading-8 text-[#627382] py-4">
+          {crop.description}
+        </p>
+      </div>
+      {!isOwner && !isAlreadyInterested && (
+        <div>
+          <h1 className="text-3xl text-center mt-4 font-bold">Express Interest</h1>
+          <div className="mt-4 flex justify-center">
+            <fieldset className="fieldset border-base-300 rounded-box w-full max-w-md border p-4 bg-base-200">
+              <form onSubmit={handleSubmit}>
+                <div className="mb-4">
+                  <label className="label">Your Name</label>
                   <input
                     type="text"
-                    value={`৳${totalPrice}`}
+                    className="input input-bordered w-full bg-gray-100"
+                    name="name"
+                    placeholder="Enter your name"
+                    defaultValue={user?.displayName || ""}
+                    required
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label className="label">Your Email</label>
+                  <input
+                    type="email"
+                    className="input input-bordered w-full bg-gray-100"
+                    name="email"
+                    placeholder="Your email"
+                    defaultValue={user?.email || ""}
+                    required
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label className="label">Crop Type</label>
+                  <input
+                    type="text"
+                    className="input input-bordered w-full bg-gray-100"
+                    value={crop.type}
                     readOnly
-                    className="input input-bordered w-full bg-green-50 font-bold text-green-700"
                   />
                 </div>
 
-                <div className="md:col-span-2">
-                  <label className="block font-semibold mb-2 text-gray-700">Message to Owner</label>
+                <div className="mb-4">
+                  <label className="label">Price Per Unit</label>
+                  <input
+                    type="text"
+                    className="input input-bordered w-full bg-gray-100"
+                    value={`$${crop.pricePerUnit}/kg`}
+                    readOnly
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label className="label">Quantity (kg)</label>
+                  <input
+                    type="number"
+                    className="input input-bordered w-full"
+                    name="quantity"
+                    placeholder="Enter quantity in kg"
+                    min="1"
+                    max={crop.quantity}
+                    onChange={handleQuantity}
+                    required
+                  />
+                  <div className="text-sm text-gray-600 mt-1">
+                    Available: {crop.quantity} kg
+                  </div>
+                </div>
+
+                <div className="mb-4">
+                  <label className="label">Total Price</label>
+                  <input
+                    type="text"
+                    className="input input-bordered w-full bg-green-50 font-bold"
+                    value={`$${calculatedPrice}`}
+                    readOnly
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label className="label">Message</label>
                   <textarea
-                    className="textarea textarea-bordered w-full h-24 focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Write your message to the crop owner..."
-                  />
+                    className="textarea textarea-bordered w-full"
+                    name="description"
+                    placeholder="Enter your message"
+                    rows="4"
+                    required
+                  ></textarea>
                 </div>
-              </div>
 
-              <button 
-                type="submit" 
-                disabled={isSubmitting}
-                className={`btn w-full mt-6 ${
-                  isSubmitting ? 'btn-disabled' : 'btn-success text-white'
-                }`}
-              >
-                {isSubmitting ? (
-                  <>
-                    <span className="loading loading-spinner"></span>
-                    Sending...
-                  </>
-                ) : (
-                  'Submit Interest'
-                )}
-              </button>
-            </form>
-          )}
+                <button
+                  type="submit"
+                  className="btn w-full btn-outline border-green-800 hover:bg-green-800 hover:text-white mt-4"
+                >
+                  Submit Interest
+                </button>
+              </form>
+            </fieldset>
+          </div>
         </div>
       )}
 
-      {/* Received Interests (Owner) */}
+      {!isOwner && isAlreadyInterested && (
+        <div className="text-center my-8 p-4 bg-yellow-100 rounded-lg">
+          <p className="text-lg text-yellow-800 font-semibold">
+            You've already sent an interest for this crop!
+          </p>
+        </div>
+      )}
+
       {isOwner && (
-        <div className="mt-10">
-          <h2 className="text-2xl font-semibold mb-6 text-blue-800 border-l-4 border-blue-600 pl-3">
-            Received Interests
-          </h2>
-          
-          {interests.length === 0 ? (
-            <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <span className="text-gray-400 text-2xl">📭</span>
-              </div>
-              <p className="text-gray-500 text-lg">No interests received yet</p>
-              <p className="text-gray-400">Interests from buyers will appear here</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto border rounded-lg">
-              <table className="table w-full">
-                <thead className="bg-gray-50">
+        <div className="my-8">
+          <h2 className="text-2xl font-bold text-center mb-6">Received Interests</h2>
+          {interests.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="table table-zebra w-full">
+                <thead>
                   <tr>
-                    <th className="font-semibold text-gray-700">Buyer</th>
-                    <th className="font-semibold text-gray-700">Quantity</th>
-                    <th className="font-semibold text-gray-700">Message</th>
-                    <th className="font-semibold text-gray-700">Status</th>
-                    <th className="font-semibold text-gray-700">Actions</th>
+                    <th>Buyer Name</th>
+                    <th>Quantity</th>
+                    <th>Message</th>
+                    <th>Total Price</th>
+                    <th>Status</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {interests.map((i) => (
-                    <tr key={i._id} className="hover:bg-gray-50">
+                  {interests.map((interest) => (
+                    <tr key={interest._id}>
+                      <td>{interest.userName}</td>
+                      <td>{interest.quantity} kg</td>
+                      <td>{interest.message}</td>
+                      <td>${interest.totalPrice}</td>
                       <td>
-                        <div>
-                          <p className="font-medium">{i.userName}</p>
-                          <p className="text-sm text-gray-500">{i.userEmail}</p>
-                        </div>
-                      </td>
-                      <td>
-                        <p>{i.quantity} {crop.unit}</p>
-                        <p className="text-sm text-green-600 font-medium">
-                          ৳{i.quantity * crop.pricePerUnit}
-                        </p>
-                      </td>
-                      <td>
-                        <p className="max-w-xs truncate" title={i.message}>
-                          {i.message || "No message"}
-                        </p>
-                      </td>
-                      <td>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          i.status === "accepted" 
-                            ? "bg-green-100 text-green-800" 
-                            : i.status === "rejected" 
-                            ? "bg-red-100 text-red-800" 
-                            : "bg-yellow-100 text-yellow-800"
-                        }`}>
-                          {i.status}
+                        <span
+                          className={`badge ${
+                            interest.status === "accepted"
+                              ? "badge-success"
+                              : interest.status === "rejected"
+                              ? "badge-error"
+                              : "badge-warning"
+                          }`}
+                        >
+                          {interest.status}
                         </span>
                       </td>
                       <td>
-                        {i.status === "pending" ? (
+                        {interest.status === "pending" && (
                           <div className="flex gap-2">
                             <button
-                              onClick={() => handleStatusChange(i._id, "accepted", i.quantity)}
-                              className="btn btn-sm btn-success text-white"
+                              onClick={() => handleInterest(interest._id, "accepted")}
+                              className="btn btn-sm btn-success"
                             >
                               Accept
                             </button>
                             <button
-                              onClick={() => handleStatusChange(i._id, "rejected", i.quantity)}
-                              className="btn btn-sm btn-error text-white"
+                              onClick={() => handleInterest(interest._id, "rejected")}
+                              className="btn btn-sm btn-error"
                             >
                               Reject
                             </button>
                           </div>
-                        ) : (
-                          <span className="text-gray-400 text-sm">No actions</span>
                         )}
                       </td>
                     </tr>
@@ -368,23 +377,17 @@ const CropDetails = () => {
                 </tbody>
               </table>
             </div>
+          ) : (
+            <div className="text-center p-8 bg-gray-100 rounded-lg">
+              <p className="text-gray-600">No interests received yet.</p>
+            </div>
           )}
         </div>
       )}
-      
-      <ToastContainer 
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
+
+      <ToastContainer />
     </div>
   );
 };
 
-export default CropDetails;
+export default CropsDetails;

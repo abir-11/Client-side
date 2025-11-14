@@ -1,158 +1,183 @@
-import React from 'react';
-import { use } from 'react';
+import React, { useContext, useState } from 'react';
 import { AuthContext } from '../../Context/AuthContext/AuthContext';
-import { useState } from 'react';
 import Swal from 'sweetalert2';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AddCrop = () => {
-    const {user,loading}=use(AuthContext);
-    const [crop,setCrop]=useState([]);
+    const { user, loading } = useContext(AuthContext);
+    const [crops, setCrops] = useState([]);
+    
     if (loading) {
-    return <p className='text-center text-lg text-green-600'>Loading...</p>;
-  }
-    const handleSubmit=(e)=>{
-         e.preventDefault();
-        const name=e.target.name.value;
-         const type=e.target.type.value;
-         const pricePerUnit = e.target.pricePerUnit.value;
-         const quantity=e.target.quantity.value;
-         const description=e.target.description.value;
-         const image=e.target.image.value;
-         const cropsAdd={
-            name:name,
-            type:type,
-            pricePerUnit:pricePerUnit,
-            unit:"Kg",
-            quantity:quantity,
-            description:description,    
-            location:"Bogura",
-            image:image,
-            owner:{
-                ownerEmail:user?.email,
-                ownerName:user?.displayName
-            }
-
-         }
-
-        //  fetch('http://localhost:3000/my_krishi_card',{
-        //     method:'POST',
-        //     headers:{
-        //         'Content-Type':"application/json"
-        //     },
-        //     body:JSON.stringify(cropsAdd)
-        //  })
-        //  .then(res=>res.json())
-        //  .then(data=>{
-        //      if(data.insertedId){
-        //                    Swal.fire({
-        //       title: "Are you sure?",
-        //       text: "You will be able to submit this!",
-        //       icon: "warning",
-        //       showCancelButton: true,
-        //       confirmButtonColor: "#3085d6",
-        //       cancelButtonColor: "#d33",
-        //       confirmButtonText: "Yes, Submit it!"
-        //     }).then((result) => {
-        //       if (result.isConfirmed) {
-        //         Swal.fire({
-        //           title: "Submit!",
-        //           text: "Your file has been Sumbit.",
-        //           icon: "success"
-        //         });
-        //       }
-        //     }); 
-        //            //add the new bid to the state
-        //    cropsAdd._id = data.insertedId;
-        //    const newCrops = [...crop, cropsAdd];
-        //            newCrops.sort((a,b)=>b.quantity-a.quantity)
-        //            setCrop(newCrops)
-        //            e.target.reset();
-        //            ;
-        //                 }
-        //                 else{
-        //                   toast.error("Crops not saved!");  
-        //                 }
-        //                 console.log('after placing Crops',data)
-        //              })
-         
-
-              fetch('http://localhost:3000/krishiCard',{
-            method:'POST',
-            headers:{
-                'Content-Type':"application/json"
-            },
-            body:JSON.stringify(cropsAdd)
-         })
-         .then(res=>res.json())
-         .then(data=>{
-             if(data.insertedId){
-                           Swal.fire({
-              title: "Are you sure?",
-              text: "You will be able to submit this!",
-              icon: "warning",
-              showCancelButton: true,
-              confirmButtonColor: "#3085d6",
-              cancelButtonColor: "#d33",
-              confirmButtonText: "Yes, Submit it!"
-            }).then((result) => {
-              if (result.isConfirmed) {
-                Swal.fire({
-                  title: "Submit!",
-                  text: "Your file has been Sumbit.",
-                  icon: "success"
-                });
-              }
-            }); 
-                   //add the new bid to the state
-           cropsAdd._id = data.insertedId;
-           const newCrops = [...crop, cropsAdd];
-                   newCrops.sort((a,b)=>b.quantity-a.quantity)
-                   setCrop(newCrops)
-                   e.target.reset();
-                   ;
-                        }
-                        else{
-                          toast.error("Crops not saved!");  
-                        }
-                        console.log('after placing Crops',data)
-                     })   
+        return <p className='text-center text-lg text-green-600'>Loading...</p>;
     }
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        
+        const form = e.target;
+        const name = form.name.value;
+        const type = form.type.value;
+        const pricePerUnit = parseFloat(form.pricePerUnit.value);
+        const quantity = parseInt(form.quantity.value);
+        const description = form.description.value;
+        const image = form.image.value;
+
+        const cropData = {
+            name: name,
+            type: type,
+            pricePerUnit: pricePerUnit,
+            unit: "kg",
+            quantity: quantity,
+            description: description,    
+            location: "Bogura",
+            image: image,
+            status: "pending",
+            owner: {
+                ownerEmail: user?.email,
+                ownerName: user?.displayName || "User"
+            },
+            interests: []
+        };
+
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Do you want to add this crop?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, Add it!",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch("http://localhost:3000/krishiCard", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(cropData),
+                })
+                .then((res) => res.json())
+                .then((data) => {
+                    console.log("Server response:", data);
+
+                    if (data.insertedId) {
+                        Swal.fire({
+                            title: "Success!",
+                            text: "Your crop has been added successfully.",
+                            icon: "success",
+                        });
+                        
+                        // Add the new crop to the state
+                        cropData._id = data.insertedId;
+                        const newCrops = [...crops, cropData];
+                        newCrops.sort((a, b) => b.quantity - a.quantity);
+                        setCrops(newCrops);
+                        form.reset();
+                    } else {
+                        toast.error("Crop not saved!");
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error adding crop:", error);
+                    toast.error("An error occurred while adding the crop!");
+                });
+            }
+        });
+    };
 
     return (
         <div className='min-h-screen my-5'>
-              <div>
-            <h1 className=' text-3xl text-center mt-4 font-bold '>Add Crops</h1>
-            <div className='mt-4 flex justify-center '>
-                <fieldset className="fieldset  border-base-300 rounded-box w-xs border p-4 bg-base-200">
-  
-          <form onSubmit={handleSubmit} >
-          <label className="label">Name</label>
-         <input type="text" className="input" name='name' placeholder='Enter your name' />
+            <div>
+                <h1 className='text-3xl text-center mt-4 font-bold'>Add Crops</h1>
+                <div className='mt-4 flex justify-center'>
+                    <fieldset className="fieldset border-base-300 rounded-box w-full max-w-md border p-4 bg-base-200">
+                        <form onSubmit={handleSubmit}>
+                            <div className="mb-4">
+                                <label className="label">Crop Name</label>
+                                <input 
+                                    type="text" 
+                                    className="input input-bordered w-full" 
+                                    name='name' 
+                                    placeholder='Enter crop name' 
+                                    required 
+                                />
+                            </div>
 
-        <label className="label">Type</label>
-       <select defaultValue="Pick a color" name='type' className="select appearance-none">
-      <option disabled={true}>type</option>
-      <option>Fruit</option>
-      <option>Vegetable</option>
-      </select>
-          <label className="label">pricePerUnit</label>
-       <input type="number" className="input" name='pricePerUnit' placeholder='pricePerUnit'  />
+                            <div className="mb-4">
+                                <label className="label">Type</label>
+                                <select 
+                                    name='type' 
+                                    className="select select-bordered w-full" 
+                                    required
+                                    defaultValue=""
+                                >
+                                    <option value="" disabled>Select crop type</option>
+                                    <option value="Fruit">Fruit</option>
+                                    <option value="Vegetable">Vegetable</option>
+                                    <option value="Grain">Grain</option>
+                                    <option value="Spice">Spice</option>
+                                </select>
+                            </div>
 
-      <label className="label">Quantity</label>
-       <input type="number" className="input" name='quantity' placeholder='Quantity Number'  />
+                            <div className="mb-4">
+                                <label className="label">Price Per Unit ($)</label>
+                                <input 
+                                    type="number" 
+                                    className="input input-bordered w-full" 
+                                    name='pricePerUnit' 
+                                    placeholder='Enter price per kg' 
+                                    min="0"
+                                    step="0.01"
+                                    required 
+                                />
+                            </div>
 
-    <label className="label">Description</label>
-      <textarea className="textarea" name='description' placeholder="description"></textarea>
+                            <div className="mb-4">
+                                <label className="label">Quantity (kg)</label>
+                                <input 
+                                    type="number" 
+                                    className="input input-bordered w-full" 
+                                    name='quantity' 
+                                    placeholder='Enter quantity in kg' 
+                                    min="1"
+                                    required 
+                                />
+                            </div>
 
-       <label className="label">image</label>
-          <input type="text" name='image' className="input" placeholder="image" />
+                            <div className="mb-4">
+                                <label className="label">Description</label>
+                                <textarea 
+                                    className="textarea textarea-bordered w-full" 
+                                    name='description' 
+                                    placeholder="Enter crop description"
+                                    rows="4"
+                                    required
+                                ></textarea>
+                            </div>
 
-  <button  className="btn w-full btn-outline border-green-800 hover:bg-green-800 hover:text-white mt-4">Submit</button>
-  </form>
+                            <div className="mb-4">
+                                <label className="label">Image URL</label>
+                                <input 
+                                    type="url" 
+                                    name='image' 
+                                    className="input input-bordered w-full" 
+                                    placeholder="Enter image URL" 
+                                    required 
+                                />
+                            </div>
 
-</fieldset>
+                            <button 
+                                type="submit" 
+                                className="btn w-full btn-outline border-green-800 hover:bg-green-800 hover:text-white mt-4"
+                            >
+                                Add Crop
+                            </button>
+                        </form>
+                    </fieldset>
+                </div>
             </div>
-        </div>
+            <ToastContainer />
         </div>
     );
 };

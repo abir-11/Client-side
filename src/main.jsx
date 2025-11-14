@@ -68,13 +68,9 @@ const router=createBrowserRouter([
       Component:Myposts
      },
      {
-  path: "/myinterests",
-  element: (
-    
-      <MyInterests/>
-    
-  ),
-}
+       path: "/myinterests",
+       element: <MyInterests/>
+     }
      
       
     ]
