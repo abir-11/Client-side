@@ -82,8 +82,8 @@ const CropsDetails = () => {
       totalPrice: totalPrice,
       status: "pending",
       owner:{
-        ownerName:crop.owner.ownerName,
-        ownerEmail:crop.owner.ownerEmail
+        ownerName:crop?.owner?.ownerName,
+        ownerEmail:crop?.owner?.ownerEmail
 
       }
     };
