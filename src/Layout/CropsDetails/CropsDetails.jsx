@@ -175,10 +175,11 @@ const CropsDetails = () => {
               <span className="inline-block bg-green-100 text-green-800 text-sm px-2 py-1 rounded mt-2">
                 Your Crop
               </span>
-            ) :<span  className="inline-block bg-green-100 text-green-800 text-sm px-2 py-1 rounded mt-2">
-              {crop.owner.ownerName} <br />
-              {crop.owner.ownerEmail}
+            ):<span  className="inline-block bg-green-100 text-green-800 text-sm px-2 py-1 rounded mt-2">
+              {crop?.owner?.ownerName ||  "Unknown Owner" } <br />
+              {crop?.owner?.ownerEmail || "No Email Available"}
               </span>}
+              
           </div>
 
           <div className="my-4 sm:my-7 flex gap-10 items-center">
