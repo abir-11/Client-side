@@ -16,7 +16,7 @@ const CropsDetails = () => {
 
   useEffect(() => {
     if (user?.email) {
-      fetch(`http://localhost:3000/interests/${crop._id}`)
+      fetch(`https://my-krishilink.vercel.app/interests/${crop._id}`)
         .then((res) => res.json())
         .then((data) => {
           const userInterest = data.find(
@@ -98,7 +98,7 @@ const CropsDetails = () => {
       confirmButtonText: "Yes, Submit it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch("http://localhost:3000/interests", {
+        fetch("https://my-krishilink.vercel.app/interests", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -134,7 +134,7 @@ const CropsDetails = () => {
   };
 
   const handleInterest = (interestId, action) => {
-    fetch(`http://localhost:3000/interests/${interestId}`, {
+    fetch(`https://my-krishilink.vercel.app/interests/${interestId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

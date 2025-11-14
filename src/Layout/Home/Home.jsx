@@ -17,9 +17,10 @@ import { useState } from 'react';
 import { FaQuoteLeft, FaStar, FaRegCommentDots } from "react-icons/fa";
 import { use } from 'react';
 import { AuthContext } from './../../Context/AuthContext/AuthContext';
+import { Link } from 'react-router';
 
 
-const krishiPromise=fetch('http://localhost:3000/latest-krishiCard')
+const krishiPromise=fetch('https://my-krishilink.vercel.app/latest-krishiCard')
 .then(res=>res.json());
 const Home = () => {
     const {loading}=use(AuthContext)
@@ -191,10 +192,13 @@ const Home = () => {
 
             {/* kirshi card section */}
             <div>
-                <Suspense fallback={<p><span className="loading loading-spinner text-success flex justify-center items-center text-center"></span></p>}>
+                
                  <KrishiCardPromise krishiPromise={krishiPromise}></KrishiCardPromise>
-                </Suspense>
+                
             </div>
+                 <div className='flex justify-center mt-10 '>
+                  <Link to='/allCrops'><button className="btn mx-auto btn-outline hover:scale-105 transition  ease-in-out border-green-800 bg-green-800 text-white">Success</button></Link>
+                 </div>
             <div>
                   <section className="py-16 ">
       <div className="container mx-auto px-6 text-center">
