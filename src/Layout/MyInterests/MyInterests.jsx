@@ -118,7 +118,7 @@ const MyInterests = () => {
                 <div key={interest._id} className="bg-white rounded-lg shadow p-4 border">
                   <div className="flex justify-between items-start mb-3">
                     <h3 className="font-semibold text-gray-900 text-sm truncate flex-1 mr-2">
-                      {interest.owner.cropName || 'N/A'}
+                      Status
                     </h3>
                     <span className={`px-2 py-1 text-xs font-semibold rounded-full flex-shrink-0 ${statusClass(interest.status)}`}>
                       {interest.status?.charAt(0).toUpperCase() + interest.status?.slice(1) || 'Pending'}
