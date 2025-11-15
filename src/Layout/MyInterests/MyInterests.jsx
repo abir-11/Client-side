@@ -8,6 +8,9 @@ const MyInterests = () => {
   const [interests, setInterests] = useState([]);
   const [filteredInterests, setFilteredInterests] = useState([]);
   const [statusFilter, setStatusFilter] = useState('all');
+  const [sorted, setSorted] = useState('high');
+
+
 
   useEffect(() => {
     if (user?.email) {
@@ -22,7 +25,7 @@ const MyInterests = () => {
         setInterests(data);
         setFilteredInterests(data);
       })
-      
+
   };
 
   useEffect(() => {
@@ -32,6 +35,18 @@ const MyInterests = () => {
       setFilteredInterests(interests.filter(interest => interest.status === statusFilter));
     }
   }, [statusFilter, interests]);
+
+  useEffect(()=>{
+    const sortedItems = [...filteredInterests].sort((a, b) => {
+    if (sorted === 'high') {
+      return b.quantity - a.quantity;
+    } else {
+      return a.quantity - b.quantity;
+    }
+  });
+  setFilteredInterests(sortedItems);
+
+  },[sorted, interests])
 
   const statusClass = (status) => {
     switch (status) {
@@ -57,7 +72,7 @@ const MyInterests = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-4 sm:py-8">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
-       
+
         <div className="text-center mb-6 sm:mb-8">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">My Interests</h1>
         </div>
@@ -86,6 +101,13 @@ const MyInterests = () => {
           >
             Rejected ({interests.filter(i => i.status === 'rejected').length})
           </button>
+
+          <select defaultValue="Sorted Option" onClick={(e) => setSorted(e.target.value)} className=" btn btn-outline h-8 ">
+            <option disabled={true}>Sorted Quantity</option>
+            <option value='high'>High Qantity</option>
+            <option value='low'>Low Qantity</option>
+          </select>
+
         </div>
 
 
@@ -110,23 +132,26 @@ const MyInterests = () => {
                         {interest.owner.ownerName || 'Unknown'}
                       </span>
                     </div>
+
                     <div className="flex justify-between">
                       <span className="text-gray-500">Quantity:</span>
                       <span className="text-gray-900">{interest.quantity} kg</span>
+
                     </div>
+
                     <div className="flex justify-between">
                       <span className="text-gray-500">Total Price:</span>
                       <span className="text-green-600 font-semibold">
                         {interest.totalPrice || (interest.quantity * (interest.pricePerUnit || 0))}/tk
                       </span>
                     </div>
-                   
+
                     <div>
                       <span className="text-gray-500 block mb-1">Message:</span>
                       <p className="text-gray-900 text-sm bg-gray-50 p-2 rounded truncate">
                         {interest.message}
                       </p>
-                     
+
                     </div>
                   </div>
                 </div>
@@ -173,7 +198,7 @@ const MyInterests = () => {
                     <th className="px-4 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Status
                     </th>
-                   
+
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -206,14 +231,14 @@ const MyInterests = () => {
                         <div className="text-sm text-gray-900 max-w-xs truncate">
                           {interest.message}
                         </div>
-                       
+
                       </td>
                       <td className="px-4 lg:px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusClass(interest.status)}`}>
                           {interest.status?.charAt(0).toUpperCase() + interest.status?.slice(1) || 'Pending'}
                         </span>
                       </td>
-                     
+
                     </tr>
                   ))}
                 </tbody>

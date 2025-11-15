@@ -137,24 +137,36 @@ const CropsDetails = () => {
   const handleInterest = (id, action) => {
     console.log(interests)
     console.log(id, action)
-  
-    // const interest = interests.find(i => i._id === interestId);
-    // let newQuantitys = interest.quantity;
-    // if (action === "accepted") {
-    //   newQuantitys = interest.quantity - quantityUpdate.quantity
-    // }
+      
+    const interest = interests.find(i => i._id === id);
+    let newQuantitys ;
+    if (action === "accepted") {
+      newQuantitys = parseInt(crop.quantity - interest.quantity)
+    }
+    fetch(`https://my-krishilink.vercel.app/krishiCard/${id}`,
+      {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ quantity: newQuantitys }),
+  })
+    .then(res=>res.json())
+    .then(()=>{
+          setQuantityUpdate({ ...quantityUpdate })
+    })
 
-    fetch(`https://my-krishilink.vercel.app/api/interests/${id}`, {
+    fetch(`https://my-krishilink.vercel.app/interests/${id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ status: action }),
     })
-      .then((res) => res.json())
+      .then((res) => console.log(res.json()))
       .then(() => {
         toast(`Interest ${action} successfully!`);
-       // setQuantityUpdate({ ...quantityUpdate })
+         
         setInterests(
           interests.map((interest) =>
             interest._id === id
@@ -359,14 +371,14 @@ const CropsDetails = () => {
                       <td>{interest.userName}</td>
                       <td>{interest.quantity} kg</td>
                       <td>{interest.message}</td>
-                      <td>${interest.totalPrice}</td>
+                      <td>{interest.totalPrice}tk</td>
                       <td>
                         <span
                           className={`badge ${interest.status === "accepted"
-                              ? "badge-success"
-                              : interest.status === "rejected"
-                                ? "badge-error"
-                                : "badge-warning"
+                            ? "badge-success"
+                            : interest.status === "rejected"
+                              ? "badge-error"
+                              : "badge-warning"
                             }`}
                         >
                           {interest.status}
