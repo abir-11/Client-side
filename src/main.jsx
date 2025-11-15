@@ -47,7 +47,7 @@ const router=createBrowserRouter([
       },
       {
         path:'/cropsDetails/:id',
-        loader:({params})=>fetch(`https://my-krishilink.vercel.app/krishiCard/${params.id}`),
+        loader:({params})=>fetch(`http://localhost:3000/krishiCard/${params.id}`),
         element:<CropsDetails />
       },
       {
@@ -64,7 +64,7 @@ const router=createBrowserRouter([
      },
      {
       path:'/my-posts',
-      loader:()=>fetch('https://my-krishilink.vercel.app/krishiCard'),
+      loader:()=>fetch('http://localhost:3000/krishiCard'),
       Component:Myposts
      },
      {

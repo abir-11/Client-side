@@ -50,7 +50,7 @@ const AddCrop = () => {
       confirmButtonText: "Yes, Add it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch("https://my-krishilink.vercel.app/krishiCard", {
+        fetch("http://localhost:3000/krishiCard", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

@@ -13,7 +13,7 @@ const AllCrops = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('https://my-krishilink.vercel.app/krishiCard')
+    fetch('http://localhost:3000/krishiCard')
       .then(res => res.json())
       .then(data => {
         setCard(data);

@@ -12,13 +12,13 @@ const CropsDetails = () => {
   const [isAlreadyInterested, setIsAlreadyInterested] = useState(false);
   const [interests, setInterests] = useState([]);
   const [quantityUpdate, setQuantityUpdate] = useState(crop);
-
+  
 
   const isOwner = user?.email === crop.owner?.ownerEmail;
-
+  console.log(interests);
   useEffect(() => {
     if (user?.email) {
-      fetch(`https://my-krishilink.vercel.app/interests/${crop._id}`)
+      fetch(`http://localhost:3000/interests/${crop._id}`)
         .then((res) => res.json())
         .then((data) => {
           const userInterest = data.find(
@@ -100,7 +100,7 @@ const CropsDetails = () => {
       confirmButtonText: "Yes, Submit it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch("https://my-krishilink.vercel.app/interests", {
+        fetch("http://localhost:3000/interests", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -134,39 +134,26 @@ const CropsDetails = () => {
     });
   };
 
-  const handleInterest = (id, action) => {
+  const handleInterest = (id, action,quan) => {
     console.log(interests)
     console.log(id, action)
-      
-    const interest = interests.find(i => i._id === id);
-    let newQuantitys ;
-    if (action === "accepted") {
-      newQuantitys = parseInt(crop.quantity - interest.quantity)
-    }
-    fetch(`https://my-krishilink.vercel.app/krishiCard/${id}`,
-      {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ quantity: newQuantitys }),
-  })
-    .then(res=>res.json())
-    .then(()=>{
-          setQuantityUpdate({ ...quantityUpdate })
-    })
 
-    fetch(`https://my-krishilink.vercel.app/interests/${id}`, {
+    let newQuantitys;
+    if (action === "accepted") {
+      newQuantitys = parseInt(crop.quantity - quan)
+    }
+    console.log(newQuantitys);
+    fetch(`http://localhost:3000/interests/${id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ status: action }),
+      body: JSON.stringify({ status: action,quantity:newQuantitys ,cropId:crop._id}),
     })
       .then((res) => console.log(res.json()))
       .then(() => {
         toast(`Interest ${action} successfully!`);
-         
+
         setInterests(
           interests.map((interest) =>
             interest._id === id
@@ -174,6 +161,9 @@ const CropsDetails = () => {
               : interest
           )
         );
+        if(action==='accepted'){
+          setQuantityUpdate({...quantityUpdate,quantity:newQuantitys})
+        }
       })
       .catch(() => toast("Failed to update interest"));
   };
@@ -183,8 +173,8 @@ const CropsDetails = () => {
       <div className="flex gap-10 flex-col sm:flex-row justify-center sm:items-center border-b border-gray-300 pb-10">
         <div>
           <img
-            src={crop.image}
-            alt={crop.name}
+            src={quantityUpdate.image}
+            alt={quantityUpdate.name}
             className="w-[316px] mx-auto h-[316px] overflow-hidden object-cover rounded-2xl bg-[#F1F5E8]"
           />
         </div>
@@ -192,15 +182,15 @@ const CropsDetails = () => {
         <div>
           <div className="border-b border-gray-300">
             <h1 className="font-bold text-2xl sm:text-3xl text-[#001931]">
-              {crop.name}
+              {quantityUpdate.name}
             </h1>
             {isOwner ? (
               <span className="inline-block bg-green-100 text-green-800 text-sm px-2 py-1 rounded mt-2">
                 Your Crop
               </span>
             ) : <span className="inline-block bg-green-100 text-green-800 text-sm px-2 py-1 rounded mt-2">
-              {crop?.owner?.ownerName || "Unknown Owner"} <br />
-              {crop?.owner?.ownerEmail || "No Email Available"}
+              {quantityUpdate?.owner?.ownerName || "Unknown Owner"} <br />
+              {quantityUpdate?.owner?.ownerEmail || "No Email Available"}
             </span>}
 
           </div>
@@ -210,7 +200,7 @@ const CropsDetails = () => {
               <ul>
                 <li className="text-[#001931]">Price Per Unit</li>
                 <li className="font-extrabold text-xl sm:text-2xl md:text-4xl text-[#001931]">
-                  {crop.pricePerUnit} tk
+                  {quantityUpdate.pricePerUnit} tk
                 </li>
               </ul>
             </div>
@@ -219,7 +209,7 @@ const CropsDetails = () => {
               <ul>
                 <li className="text-[#001931]">Available Quantity</li>
                 <li className="font-extrabold text-xl sm:text-2xl md:text-4xl text-[#001931]">
-                  {crop.quantity} kg
+                  {quantityUpdate.quantity} kg
                 </li>
               </ul>
             </div>
@@ -228,7 +218,7 @@ const CropsDetails = () => {
               <ul>
                 <li className="text-[#001931]">Type</li>
                 <li className="font-extrabold text-xl sm:text-2xl md:text-4xl text-[#001931]">
-                  {crop.type}
+                  {quantityUpdate.type}
                 </li>
               </ul>
             </div>
@@ -240,7 +230,7 @@ const CropsDetails = () => {
           Description
         </h3>
         <p className="text-base sm:text-xl sm:leading-8 text-[#627382] py-4">
-          {crop.description}
+          {quantityUpdate.description}
         </p>
       </div>
       {!isOwner && !isAlreadyInterested && (
@@ -278,7 +268,7 @@ const CropsDetails = () => {
                   <input
                     type="text"
                     className="input input-bordered w-full bg-gray-100"
-                    value={crop.type}
+                    value={quantityUpdate.type}
                     readOnly
                   />
                 </div>
@@ -288,7 +278,7 @@ const CropsDetails = () => {
                   <input
                     type="text"
                     className="input input-bordered w-full bg-gray-100"
-                    value={`${crop.pricePerUnit} tk`}
+                    value={`${quantityUpdate.pricePerUnit} tk`}
                     readOnly
                   />
                 </div>
@@ -388,7 +378,7 @@ const CropsDetails = () => {
                         {interest.status === "pending" && (
                           <div className="flex gap-2">
                             <button
-                              onClick={() => handleInterest(interest._id, "accepted")}
+                              onClick={() => handleInterest(interest._id, "accepted",interest.quantity)}
                               className="btn btn-outline btn-sm border-green-800 hover:bg-green-800 hover:text-white"
                             >
                               Accept

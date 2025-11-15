@@ -43,7 +43,7 @@ const Myposts = () => {
       image: form.image.value,
     };
 
-    fetch(`https://my-krishilink.vercel.app/krishiCard/${editingCrop._id}`, {
+    fetch(`http://localhost:3000/krishiCard/${editingCrop._id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updatedCrop),
@@ -85,7 +85,7 @@ const Myposts = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch(`https://my-krishilink.vercel.app/krishiCard/${cropId}`, {
+        fetch(`http://localhost:3000/krishiCard/${cropId}`, {
           method: "DELETE",
         })
           .then((res) => res.json())
