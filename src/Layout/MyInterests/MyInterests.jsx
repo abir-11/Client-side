@@ -19,7 +19,7 @@ const MyInterests = () => {
   }, [user?.email]);
 
   const fetchInterests = () => {
-    fetch(`http://localhost:3000/interests/user/${user.email}`)
+    fetch(`https://my-krishilink.vercel.app/interests/user/${user.email}`)
       .then((res) => res.json())
       .then((data) => {
         setInterests(data);

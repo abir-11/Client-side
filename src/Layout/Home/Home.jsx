@@ -20,7 +20,7 @@ import { AuthContext } from './../../Context/AuthContext/AuthContext';
 import { Link } from 'react-router';
 
 
-const krishiPromise=fetch('http://localhost:3000/latest-krishiCard')
+const krishiPromise=fetch('https://my-krishilink.vercel.app/latest-krishiCard')
 .then(res=>res.json());
 const Home = () => {
     const {loading}=use(AuthContext)

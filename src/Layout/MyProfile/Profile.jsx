@@ -18,7 +18,7 @@ const Profile = ({children}) => {
     }
   const handleUpdate = async () => {
   if (!user) {
-    console.log("No user logged in");
+   // console.log("No user logged in");
     return;
   }
 
@@ -34,7 +34,7 @@ const Profile = ({children}) => {
     setUser({ ...user }); 
     toast.success('Profile updated successfully!');
   } catch (error) {
-    console.error("Profile update error:", error.message);
+    //console.error("Profile update error:", error.message);
     toast.error(`Update failed: ${error.message}`);
   }
 };

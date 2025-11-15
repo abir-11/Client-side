@@ -18,12 +18,12 @@ const Login = () => {
   const handleGoogle = () => {
     signInWithGoogle()
       .then((result) => {
-        console.log(result.user);
+        //console.log(result.user);
         const from = location.state?.from || "/";
         navigate(from, { replace: true });
       })
       .catch((error) => {
-        console.log(error.message);
+       // console.log(error.message);
       });
   };
   const handleSingIn = (event) => {
@@ -32,13 +32,13 @@ const Login = () => {
     const password = event.target.password.value;
     SingInUser(email, password)
       .then((result) => {
-        console.log(result.user);
+       // console.log(result.user);
         //event.target.reset()
         const from = location.state?.from || "/";
         navigate(from, { replace: true });
       })
       .catch((error) => {
-        console.log(error.message);
+       // console.log(error.message);
       });
   };
   const handleShowPassWorded = (e) => {
@@ -52,7 +52,7 @@ const Login = () => {
         alert("please check your email");
       })
       .catch((error) => {
-        console.log(error.message);
+        //console.log(error.message);
       });
   };
   return (

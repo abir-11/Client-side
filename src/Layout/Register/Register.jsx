@@ -31,10 +31,10 @@ const Register = () => {
     try {
       const result = await createUser(email, password, displayName, photoURL);
       //console.log(result.user);
-      console.log(result.displayName, result.photoURL);
+     // console.log(result.displayName, result.photoURL);
       navigate(location?.state || "/");
     } catch (error) {
-      console.log(error.message);
+     // console.log(error.message);
       setError(error.message);
     }
   };

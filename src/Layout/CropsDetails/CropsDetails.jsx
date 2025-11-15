@@ -15,10 +15,10 @@ const CropsDetails = () => {
   
 
   const isOwner = user?.email === crop.owner?.ownerEmail;
-  console.log(interests);
+  //console.log(interests);
   useEffect(() => {
     if (user?.email) {
-      fetch(`http://localhost:3000/interests/${crop._id}`)
+      fetch(`https://my-krishilink.vercel.app/interests/${crop._id}`)
         .then((res) => res.json())
         .then((data) => {
           const userInterest = data.find(
@@ -100,7 +100,7 @@ const CropsDetails = () => {
       confirmButtonText: "Yes, Submit it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch("http://localhost:3000/interests", {
+        fetch("https://my-krishilink.vercel.app/interests", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -109,7 +109,7 @@ const CropsDetails = () => {
         })
           .then((res) => res.json())
           .then((data) => {
-            console.log("Server response:", data);
+            //console.log("Server response:", data);
 
             if (data.insertedId) {
               Swal.fire({
@@ -135,22 +135,22 @@ const CropsDetails = () => {
   };
 
   const handleInterest = (id, action,quan) => {
-    console.log(interests)
-    console.log(id, action)
+    //console.log(interests)
+   // console.log(id, action)
 
     let newQuantitys;
     if (action === "accepted") {
       newQuantitys = parseInt(crop.quantity - quan)
     }
-    console.log(newQuantitys);
-    fetch(`http://localhost:3000/interests/${id}`, {
+   // console.log(newQuantitys);
+    fetch(`https://my-krishilink.vercel.app/interests/${id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ status: action,quantity:newQuantitys ,cropId:crop._id}),
     })
-      .then((res) => console.log(res.json()))
+      .then((res) => res.json())
       .then(() => {
         toast(`Interest ${action} successfully!`);
 

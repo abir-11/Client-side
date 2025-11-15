@@ -13,9 +13,9 @@ const Navbar = () => {
   const handleSingOut=()=>{
     singOutUser()
     .then(()=>{
-      console.log("logout succsefull")
+      //console.log("logout succsefull")
     }).catch((error)=>{
-      console.log(error.message)
+      //console.log(error.message)
     })
   }
     const links=<>
