@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { useLoaderData } from "react-router";
+import { useLoaderData, useLocation, useNavigate } from "react-router";
 import { AuthContext } from "./../../Context/AuthContext/AuthContext";
 import Swal from "sweetalert2";
 import { ToastContainer, toast } from "react-toastify";
@@ -12,7 +12,8 @@ const CropsDetails = () => {
   const [isAlreadyInterested, setIsAlreadyInterested] = useState(false);
   const [interests, setInterests] = useState([]);
   const [quantityUpdate, setQuantityUpdate] = useState(crop);
-  
+  const location=useLocation();
+  const navigate=useNavigate();
 
   const isOwner = user?.email === crop.owner?.ownerEmail;
   //console.log(interests);
@@ -45,6 +46,11 @@ const CropsDetails = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if(!user){
+      toast.error("You must be logged in to submit an interest!");
+     navigate('/login',{ state: { from: location.pathname } });
+      return;
+    }
 
     if (isOwner) {
       toast.error("You cannot express interest in your own crop!");
@@ -188,7 +194,7 @@ const CropsDetails = () => {
               <span className="inline-block bg-green-100 text-green-800 text-sm px-2 py-1 rounded mt-2">
                 Your Crop
               </span>
-            ) : <span className="inline-block bg-green-100 text-green-800 text-sm px-2 py-1 rounded mt-2">
+            ) : <span className="inline-block bg-green-100 text-green-800 text-sm px-2 py-1 my-2 rounded mt-2">
               {quantityUpdate?.owner?.ownerName || "Unknown Owner"} <br />
               {quantityUpdate?.owner?.ownerEmail || "No Email Available"}
             </span>}

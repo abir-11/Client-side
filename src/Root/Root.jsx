@@ -7,8 +7,12 @@ import Footer from '../Layout/Footer/Footer';
 const Root = () => {
     return (
         <div>
-            <Navbar></Navbar>
-            <Outlet></Outlet>
+            <div className=''>
+                <Navbar></Navbar>
+            </div>
+            <div className='min-h-screen'>
+                <Outlet></Outlet>
+            </div>
             <Footer></Footer>
         </div>
     );
