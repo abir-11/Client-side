@@ -1,150 +1,155 @@
-import React from "react";
-import { use } from "react";
+import React, { useState, useContext, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { useState } from "react";
-import { useRef } from "react";
+import { FaEye, FaEyeSlash, FaGoogle } from "react-icons/fa";
 import { sendPasswordResetEmail } from "firebase/auth";
-import { auth } from "./../../Firebase/Firebase.init";
-import { AuthContext } from "./../../Context/AuthContext/AuthContext";
+import { auth } from "../../Firebase/Firebase.init";
+import { AuthContext } from "../../Context/AuthContext/AuthContext";
+import farmingImg from "../../assets/photo-1486754735734-325b5831c3ad.avif";
 
 const Login = () => {
-  const { SingInUser, signInWithGoogle } = use(AuthContext);
-  const [showpassword, setShowpassword] = useState(false);
+  const { SingInUser, signInWithGoogle } = useContext(AuthContext);
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+
+  const emailRef = useRef();
   const location = useLocation();
   const navigate = useNavigate();
-  const emailRef = useRef();
-  //handlesign in with google
-  const handleGoogle = () => {
-    signInWithGoogle()
-      .then((result) => {
-        //console.log(result.user);
-        const from = location.state?.from || "/";
-        navigate(from, { replace: true });
-      })
-      .catch((error) => {
-       // console.log(error.message);
-      });
-  };
-  const handleSingIn = (event) => {
-    event.preventDefault();
-    const email = event.target.email.value;
-    const password = event.target.password.value;
-    SingInUser(email, password)
-      .then((result) => {
-       // console.log(result.user);
-        //event.target.reset()
-        const from = location.state?.from || "/";
-        navigate(from, { replace: true });
-      })
-      .catch((error) => {
-       // console.log(error.message);
-      });
-  };
-  const handleShowPassWorded = (e) => {
+
+  const from = location.state?.from || "/";
+
+  // Email & Password Login
+  const handleSignIn = (e) => {
     e.preventDefault();
-    setShowpassword(!showpassword);
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+
+    SingInUser(email, password)
+      .then(() => {
+        navigate(from, { replace: true });
+      })
+      .catch((err) => {
+        setError(err.message);
+      });
   };
+
+  // Google Login
+  const handleGoogleLogin = () => {
+    signInWithGoogle()
+      .then(() => {
+        navigate(from, { replace: true });
+      })
+      .catch((err) => {
+        setError(err.message);
+      });
+  };
+
+  // Forgot Password
   const handleForgetPass = () => {
     const email = emailRef.current.value;
+    if (!email) {
+      alert("Please enter your email first");
+      return;
+    }
+
     sendPasswordResetEmail(auth, email)
       .then(() => {
-        alert("please check your email");
+        alert("Password reset email sent. Please check your inbox.");
       })
-      .catch((error) => {
-        //console.log(error.message);
+      .catch((err) => {
+        setError(err.message);
       });
   };
+
   return (
-    <div className="hero bg-base-200 min-h-screen">
-      <div className="hero-content flex-col ">
-        <div className="text-center lg:text-left">
-          <h1 className="text-5xl font-bold flex justify-center">Login now!</h1>
-          <p className="py-6 flex text-center">
-            Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda
-            excepturi exercitationem quasi. In deleniti eaque aut repudiandae et
-            a id nisi.
-          </p>
-        </div>
-        <div className="card bg-base-100 w-full max-w-sm shrink-0 shadow-2xl">
-          <div className="card-body">
-            <form onSubmit={handleSingIn}>
-              <fieldset className="fieldset">
-                <label className="label">Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  ref={emailRef}
-                  className="input"
-                  placeholder="Email"
-                />
-                <label className="label">Password</label>
-                <div className="relative">
-                  <input
-                    type={showpassword ? "text" : "password"}
-                    className="input"
-                    name="password"
-                    placeholder="Password"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleShowPassWorded}
-                    className="  absolute right-4 top-3 px-4  "
-                  >
-                    {showpassword ? <FaEyeSlash /> : <FaEye />}
-                  </button>
-                </div>
-                <div onClick={handleForgetPass}>
-                  <a className="link link-hover">Forgot password?</a>
-                </div>
-                <button type="submit" className="btn btn-neutral mt-4">
-                  Login
-                </button>
-              </fieldset>
-            </form>
-            <div>
-              {/* google sign in */}
-              <button
-                onClick={handleGoogle}
-                className="btn w-full bg-white text-black border-[#e5e5e5]"
-              >
-                <svg
-                  aria-label="Google logo"
-                  width="16"
-                  height="16"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 512 512"
-                >
-                  <g>
-                    <path d="m0 0H512V512H0" fill="#fff"></path>
-                    <path
-                      fill="#34a853"
-                      d="M153 292c30 82 118 95 171 60h62v48A192 192 0 0190 341"
-                    ></path>
-                    <path
-                      fill="#4285f4"
-                      d="m386 400a140 175 0 0053-179H260v74h102q-7 37-38 57"
-                    ></path>
-                    <path
-                      fill="#fbbc02"
-                      d="m90 341a208 200 0 010-171l63 49q-12 37 0 73"
-                    ></path>
-                    <path
-                      fill="#ea4335"
-                      d="m153 219c22-69 116-109 179-50l55-54c-78-75-230-72-297 55"
-                    ></path>
-                  </g>
-                </svg>
-                Login with Google
-              </button>
-            </div>
-            <p>
-              New to our website ? please{" "}
-              <Link to="/signup" className="text-blue-500 underline">
-                Sign-Up
-              </Link>
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-green-100 flex items-center justify-center px-4">
+      <div className="max-w-5xl my-10 w-full bg-white rounded-2xl shadow-xl grid grid-cols-1 lg:grid-cols-2 overflow-hidden">
+
+        {/* Left Image Section */}
+        <div className=" relative">
+          <img
+            src={farmingImg}
+            alt="Agriculture"
+            className="h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-green-900/40 flex items-end p-6">
+            <p className="text-white text-lg font-semibold">
+              Smart Login for Smarter Farming 🌾
             </p>
           </div>
+        </div>
+
+        {/* Right Form Section */}
+        <div className="p-8 lg:p-12">
+          <h2 className="text-3xl font-bold text-green-700 mb-1">
+            Welcome Back
+          </h2>
+          <p className="text-gray-500 mb-6">
+            Login to continue your agriculture journey
+          </p>
+
+          <form onSubmit={handleSignIn} className="space-y-4">
+            <input
+              type="email"
+              name="email"
+              ref={emailRef}
+              placeholder="Email Address"
+              className="input input-bordered w-full"
+              required
+            />
+
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Password"
+                className="input input-bordered w-full pr-12"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-3 text-gray-500"
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
+
+            <div
+              onClick={handleForgetPass}
+              className="text-sm text-green-600 hover:underline cursor-pointer"
+            >
+              Forgot password?
+            </div>
+
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+
+            <button className="btn w-full bg-green-600 hover:bg-green-700 text-white">
+              Login
+            </button>
+          </form>
+
+          {/* Divider */}
+          <div className="divider my-6">OR</div>
+
+          {/* Google Login */}
+          <button
+            onClick={handleGoogleLogin}
+            className="btn w-full bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 flex items-center justify-center gap-3"
+          >
+            <FaGoogle className="text-green-500" />
+            Continue with Google
+          </button>
+
+          <p className="text-sm text-center mt-6 text-gray-600">
+            New here?{" "}
+            <Link
+              to="/register"
+              className="text-green-600 font-medium hover:underline"
+            >
+              Create an account
+            </Link>
+          </p>
         </div>
       </div>
     </div>

@@ -6,12 +6,12 @@ import { getAuth } from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyCXmZq4UmFzW0hDxIwvZ5-0bizg1l1nzW4",
-  authDomain: "my-kishilink.firebaseapp.com",
-  projectId: "my-kishilink",
-  storageBucket: "my-kishilink.firebasestorage.app",
-  messagingSenderId: "409457439123",
-  appId: "1:409457439123:web:0e5c769b2398e19510f866"
+  apiKey: import.meta.env.VITE_API_KEY,
+  authDomain: import.meta.env.VITE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_APP_ID,
 };
 
 // Initialize Firebase
