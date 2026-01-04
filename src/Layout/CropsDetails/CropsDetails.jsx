@@ -175,7 +175,8 @@ const CropsDetails = () => {
   };
 
   return (
-    <div className="max-w-11/12 mx-auto my-5 sm:my-10">
+    <div className="bg-green-50">
+      <div className="max-w-11/12 mx-auto py-10 ">
       <div className="flex gap-10 flex-col sm:flex-row justify-center sm:items-center border-b border-gray-300 pb-10">
         <div>
           <img
@@ -240,16 +241,16 @@ const CropsDetails = () => {
         </p>
       </div>
       {!isOwner && !isAlreadyInterested && (
-        <div>
-          <h1 className="text-3xl text-center mt-4 font-bold">Interest Form</h1>
+        <div >
+          <h1 className="text-3xl text-center mt-4 font-bold text-green-800">Interest Form</h1>
           <div className="mt-4 flex justify-center">
-            <fieldset className="fieldset border-base-300 rounded-box w-full max-w-md border p-4 bg-base-200">
+            <fieldset className="fieldset border-base-300 rounded-box w-full max-w-md border p-4 bg-green-100">
               <form onSubmit={handleSubmit}>
                 <div className="mb-4">
                   <label className="label">Your Name</label>
                   <input
                     type="text"
-                    className="input input-bordered w-full bg-gray-100"
+                    className="input bg-transparent border-gray-400 input-bordered w-full "
                     name="name"
                     placeholder="Enter your name"
                     defaultValue={user?.displayName || ""}
@@ -261,7 +262,7 @@ const CropsDetails = () => {
                   <label className="label">Your Email</label>
                   <input
                     type="email"
-                    className="input input-bordered w-full bg-gray-100"
+                    className="input bg-transparent border-gray-400  input-bordered w-full "
                     name="email"
                     placeholder="Your email"
                     defaultValue={user?.email || ""}
@@ -273,7 +274,7 @@ const CropsDetails = () => {
                   <label className="label">Crop Type</label>
                   <input
                     type="text"
-                    className="input input-bordered w-full bg-gray-100"
+                    className="input input-bordered w-full bg-transparent border-gray-400"
                     value={quantityUpdate.type}
                     readOnly
                   />
@@ -283,7 +284,7 @@ const CropsDetails = () => {
                   <label className="label">Price Per Unit</label>
                   <input
                     type="text"
-                    className="input input-bordered w-full bg-gray-100"
+                    className="input input-bordered w-full bg-transparent border-gray-400"
                     value={`${quantityUpdate.pricePerUnit} tk`}
                     readOnly
                   />
@@ -293,7 +294,7 @@ const CropsDetails = () => {
                   <label className="label">Quantity (kg)</label>
                   <input
                     type="number"
-                    className="input input-bordered w-full"
+                    className="input bg-transparent border-gray-400 input-bordered w-full"
                     name="quantity"
                     placeholder="Enter quantity in kg"
                     min="1"
@@ -308,7 +309,7 @@ const CropsDetails = () => {
                   <label className="label">Total Price</label>
                   <input
                     type="text"
-                    className="input input-bordered w-full bg-green-50 font-bold"
+                    className="input input-bordered w-full bg-transparent border-gray-400 font-bold"
                     value={`${calculatedPrice} tk`}
                     readOnly
                   />
@@ -317,7 +318,7 @@ const CropsDetails = () => {
                 <div className="mb-4">
                   <label className="label">Message</label>
                   <textarea
-                    className="textarea textarea-bordered w-full"
+                    className="textarea bg-transparent border-gray-400 textarea-bordered w-full"
                     name="description"
                     placeholder="Enter your message"
                     rows="4"
@@ -412,6 +413,7 @@ const CropsDetails = () => {
       )}
 
       <ToastContainer />
+    </div>
     </div>
   );
 };

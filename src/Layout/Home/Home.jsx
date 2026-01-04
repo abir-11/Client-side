@@ -392,7 +392,7 @@ const Home = () => {
         </div>
       </section>
 
-      <section className="pb-10 rounded-2xl my-16  max-w-6xl mx-auto shadow-xl">
+      <section className="pb-10 rounded-2xl my-16  max-w-6xl px-10 mx-auto shadow-xl">
         <h2 className="text-4xl font-bold text-center mb-10 text-green-800">
           Our Services
         </h2>

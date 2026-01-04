@@ -51,44 +51,28 @@ const Navbar = () => {
     {user && (
       <>
         <NavLink
-          to="/profile"
+          to="/contact"
           className={({ isActive }) =>
             `px-4 py-2 rounded-2xl transition-colors duration-300 ${isActive ? "bg-green-800 text-white" : "text-gray-700 hover:bg-green-100"
             }`
           }
         >
-          Profile
+         Contact Us
         </NavLink>
 
         <NavLink
-          to="/addCrop"
+          to="/privacy-policy"
           className={({ isActive }) =>
             `px-4 py-2 rounded-2xl transition-colors duration-300 ${isActive ? "bg-green-800 text-white" : "text-gray-700 hover:bg-green-100"
             }`
           }
         >
-          Add Crop
+          Privacy Policy
         </NavLink>
 
-        <NavLink
-          to="/my-posts"
-          className={({ isActive }) =>
-            `px-4 py-2 rounded-2xl transition-colors duration-300 ${isActive ? "bg-green-800 text-white" : "text-gray-700 hover:bg-green-100"
-            }`
-          }
-        >
-          My Posts
-        </NavLink>
+        
 
-        <NavLink
-          to="/myinterests"
-          className={({ isActive }) =>
-            `px-4 py-2 rounded-2xl transition-colors duration-300 ${isActive ? "bg-green-800 text-white" : "text-gray-700 hover:bg-green-100"
-            }`
-          }
-        >
-          My Interests
-        </NavLink>
+       
       </>
     )}
 
@@ -125,9 +109,13 @@ const Navbar = () => {
       <div className="navbar-end">
         <div className="flex-none">
           {user ? (
-            <div className="dropdown dropdown-end">
+            
+              
+              <div className="dropdown dropdown-end">
               <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
+                
                 <div className="w-10 rounded-full">
+                  
                   <img
                     alt="Tailwind CSS Navbar component"
                     src={user?.photoURL || "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"} />
@@ -146,25 +134,23 @@ const Navbar = () => {
           {user.displayName}
         </NavLink>
                <NavLink
-          
+          to='/dashboard'
           className={({ isActive }) =>
-            `px-4 py-2 rounded-2xl transition-colors duration-300 ${!isActive ? "bg-green-800 text-white" : "text-gray-700 hover:bg-green-100"
+            `px-4 py-2 rounded-2xl transition-colors duration-300 ${isActive ? "bg-green-800 text-white" : "text-gray-700 hover:bg-green-100"
             }`
           }
         >
           Dashboard
         </NavLink>
-               <NavLink
-         
-          className={({ isActive }) =>
+            
+         <NavLink className={({ isActive }) =>
             `px-4 py-2 rounded-2xl transition-colors duration-300 ${!isActive ? "bg-green-800 text-white" : "text-gray-700 hover:bg-green-100"
             }`
-          }
-        >
-         <button onClick={handleSingOut}>Logout</button>
-        </NavLink>
+          } onClick={handleSingOut}>Logout</NavLink>
+       
               </ul>
             </div>
+           
 
           ) : (
             <div className="flex gap-3">

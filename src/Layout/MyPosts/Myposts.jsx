@@ -103,12 +103,12 @@ const Myposts = () => {
   };
 
   return (
-    <div className="min-h-screen mt-4 px-2 sm:px-4 md:px-8">
-      <h1 className="text-2xl md:text-3xl font-bold text-center mb-4">
+    <div className="min-h-screen my-5 px-2 sm:px-4 md:px-8">
+      <h1 className="text-2xl text-green-800 md:text-3xl font-bold text-center mb-4">
         My Posts
       </h1>
 
-   
+
       <div className="hidden md:block overflow-x-auto">
         <table className="table table-zebra w-full">
           <thead className="bg-green-200 text-sm md:text-base">
@@ -161,7 +161,7 @@ const Myposts = () => {
         </table>
       </div>
 
-     
+
       <div className="md:hidden flex flex-col gap-3">
         {crops.map((datas, index) => (
           <div key={datas._id || index} className="bg-green-50 p-3 rounded-lg shadow">
@@ -206,7 +206,7 @@ const Myposts = () => {
         ))}
       </div>
 
-    
+
       <dialog ref={modalRef} className="modal modal-middle">
         <div className="modal-box max-w-md">
           <h1 className="text-2xl font-bold text-center mb-4">Edit Crop</h1>
@@ -270,6 +270,18 @@ const Myposts = () => {
           </div>
         </div>
       </dialog>
+      <div>
+        {crops.length === 0 && (
+          <div className="flex min-h-screen flex-col items-center justify-center  text-center bg-green-50 py-10 rounded-2xl">
+            <p className="text-2xl font-semibold text-green-700">
+              🌱 No posts yet
+            </p>
+            <p className="text-gray-500 mt-2">
+              You haven’t added any crops yet. Start by creating your first post.
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

@@ -26,6 +26,8 @@ import AboutUs from './Layout/AboutUs/AboutUs.jsx';
 import ContactUs from './Layout/ContactUs/ContactUs.jsx';
 import PrivacyPolicy from './PrivacyPolicy/PrivacyPolicy.jsx';
 import CookiePolicy from './Layout/CookiePolicy/CookiePolicy.jsx';
+import Dashboard from './Layout/Dashborad/Dashborad.jsx';
+import DashboardLayout from './Root/DashboardLayout.jsx';
 
 
 const router = createBrowserRouter([
@@ -60,9 +62,6 @@ const router = createBrowserRouter([
       { path: 'my-posts', 
         loader: () => fetch('https://my-krishilink.vercel.app/krishiCard'), 
         Component: Myposts 
-      },
-      { path: 'myinterests', 
-        element: <MyInterests /> 
       },
 
       {
@@ -100,7 +99,29 @@ const router = createBrowserRouter([
         Component:CookiePolicy
       }
     ]
-  }
+  },
+  {
+  path: "/dashboard",
+  Component: DashboardLayout,
+  children: [
+    { index: true,
+      Component:Dashboard },
+       { path: 'profile', 
+        Component: Profile 
+      },
+      { path: 'add-post', 
+        Component: AddCrop 
+      },
+      { path: 'my-posts', 
+        loader: () => fetch('https://my-krishilink.vercel.app/krishiCard'), 
+        Component: Myposts 
+      },
+      { path: 'myinterests', 
+        element: <MyInterests /> 
+      },
+   
+  ],
+}
 ]);
 
 

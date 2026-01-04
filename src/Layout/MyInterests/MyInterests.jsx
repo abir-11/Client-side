@@ -70,7 +70,7 @@ const MyInterests = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-4 sm:py-8">
+    <div className="min-h-screen bg-green-50 py-4 sm:py-8">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
 
         <div className="text-center mb-6 sm:mb-8">
@@ -245,7 +245,7 @@ const MyInterests = () => {
               </table>
             </div>
           ) : (
-            <div className="text-center py-12">
+            <div className="text-center bg-green-200 py-12">
               <div className="text-gray-400 mb-4">
                 <svg className="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -264,23 +264,23 @@ const MyInterests = () => {
 
         {interests.length > 0 && (
           <div className="mt-6 sm:mt-8 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            <div className="bg-white rounded-lg shadow p-3 sm:p-4 text-center">
+            <div className="bg-green-200 rounded-lg shadow p-3 sm:p-4 text-center">
               <div className="text-xl sm:text-2xl font-bold text-gray-900">{interests.length}</div>
               <div className="text-xs sm:text-sm text-gray-500">Total Interests</div>
             </div>
-            <div className="bg-white rounded-lg shadow p-3 sm:p-4 text-center">
+            <div className="bg-green-200 rounded-lg shadow p-3 sm:p-4 text-center">
               <div className="text-xl sm:text-2xl font-bold text-yellow-600">
                 {interests.filter(i => i.status === 'pending').length}
               </div>
               <div className="text-xs sm:text-sm text-gray-500">Pending</div>
             </div>
-            <div className="bg-white rounded-lg shadow p-3 sm:p-4 text-center">
+            <div className="bg-green-200 rounded-lg shadow p-3 sm:p-4 text-center">
               <div className="text-xl sm:text-2xl font-bold text-green-600">
                 {interests.filter(i => i.status === 'accepted').length}
               </div>
               <div className="text-xs sm:text-sm text-gray-500">Accepted</div>
             </div>
-            <div className="bg-white rounded-lg shadow p-3 sm:p-4 text-center">
+            <div className="bg-green-200 rounded-lg shadow p-3 sm:p-4 text-center">
               <div className="text-xl sm:text-2xl font-bold text-red-600">
                 {interests.filter(i => i.status === 'rejected').length}
               </div>

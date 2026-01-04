@@ -37,7 +37,8 @@ const AddCrop = () => {
         ownerEmail: user?.email,
         ownerName: user?.displayName || "User"
       },
-      interests: []
+      interests: [],
+      createAt:new Date()
     };
 
     Swal.fire({
@@ -87,17 +88,17 @@ const AddCrop = () => {
   };
 
   return (
-    <div className='min-h-screen my-5'>
+    <div className='min-h-screen bg-green-50'>
       <div>
-        <h1 className='text-3xl text-center mt-4 font-bold'>Add Crops</h1>
+        <h1 className='text-3xl text-center pt-4 text-green-800 font-bold'>Add Crops</h1>
         <div className='mt-4 flex justify-center'>
-          <fieldset className="fieldset border-base-300 rounded-box w-full max-w-md border p-4 bg-base-200">
+          <fieldset className="fieldset border-base-300 rounded-box w-full max-w-md border p-4 bg-green-100">
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
                 <label className="label">Crop Name</label>
                 <input
                   type="text"
-                  className="input input-bordered w-full"
+                  className="input bg-transparent border-gray-400 input-bordered w-full"
                   name='name'
                   placeholder='Enter crop name'
                   required
@@ -108,7 +109,7 @@ const AddCrop = () => {
                 <label className="label">Type</label>
                 <select
                   name='type'
-                  className="select select-bordered w-full"
+                  className="select bg-transparent border-gray-400 select-bordered w-full"
                   required
                   defaultValue=""
                 >
@@ -123,7 +124,7 @@ const AddCrop = () => {
                 <label className="label">Price Per Unit ($)</label>
                 <input
                   type="number"
-                  className="input input-bordered w-full"
+                  className="input bg-transparent border-gray-400 input-bordered w-full"
                   name='pricePerUnit'
                   placeholder='Enter price per kg'
                   min="0"
@@ -136,7 +137,7 @@ const AddCrop = () => {
                 <label className="label">Quantity (kg)</label>
                 <input
                   type="number"
-                  className="input input-bordered w-full"
+                  className="input bg-transparent border-gray-400 input-bordered w-full"
                   name='quantity'
                   placeholder='Enter quantity in kg'
                   min="1"
@@ -147,7 +148,7 @@ const AddCrop = () => {
               <div className="mb-4">
                 <label className="label">Description</label>
                 <textarea
-                  className="textarea textarea-bordered w-full"
+                  className="textarea bg-transparent border-gray-400 textarea-bordered w-full"
                   name='description'
                   placeholder="Enter crop description"
                   rows="4"
@@ -160,7 +161,7 @@ const AddCrop = () => {
                 <input
                   type="url"
                   name='image'
-                  className="input input-bordered w-full"
+                  className="input bg-transparent border-gray-400 input-bordered w-full"
                   placeholder="Enter image URL"
                   required
                 />
