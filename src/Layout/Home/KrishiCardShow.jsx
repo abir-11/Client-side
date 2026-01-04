@@ -7,6 +7,7 @@ import { FaMapLocationDot } from 'react-icons/fa6';
 const KrishiCardShow = ({ datas }) => {
   const { user } = use(AuthContext);
   const navigate = useNavigate();
+  const isOwner = user?.email === datas.owner?.ownerEmail;
 
   const handleViewDetails = () => {
     if (!user) {
@@ -21,7 +22,7 @@ const KrishiCardShow = ({ datas }) => {
       {/* Background Glow Effect */}
       <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-emerald-500/5 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-      <div className="relative flex flex-col rounded-2xl bg-white shadow-md hover:shadow-2xl border border-gray-100 hover:border-green-200 overflow-hidden h-full transform hover:scale-[1.02] transition-all duration-500 z-10">
+      <div className="relative flex flex-col rounded-2xl bg-white shadow-md hover:shadow-2xl border border-gray-100 hover:border-green-200 overflow-hidden h-full transform hover:scale-[1.02] transition-all duration-500 pb-4 z-10">
 
         {/* Image Section with Professional Badge */}
         <div className="relative h-56 overflow-hidden">
@@ -46,20 +47,29 @@ const KrishiCardShow = ({ datas }) => {
         </div>
 
         {/* Content Section */}
-        <div className="p-6 flex flex-col flex-grow">
+        <div className="px-6 flex flex-col flex-grow">
           {/* title location */}
           <div className='flex justify-between my-1'>
-            <div className="font-bold text-xl text-gray-900 mb-4 line-clamp-1 group-hover:text-green-800 transition-colors">
+            <div className="font-bold text-xl text-gray-900  line-clamp-1 group-hover:text-green-800 transition-colors">
               {/* Title */}
 
               {datas.name}
 
             </div>
-            <div className="font-bold text-xl flex items-center gap-2 text-gray-900 mb-4 line-clamp-1 group-hover:text-green-800 transition-colors">
+            <div className="font-bold text-xl flex items-center gap-2 text-gray-900  line-clamp-1 group-hover:text-green-800 transition-colors">
               <span><FaMapLocationDot /></span> <span>{datas.location}</span>
             </div>
           </div>
-
+            <div>
+                {isOwner ? (
+              <span className="inline-block  text-green-800 text-sm px-2  mb-2 rounded ">
+                Your Crop
+              </span>
+            ) : <span className=" flex  justify-between  text-green-800 text-sm px-2 my-2 rounded mt-2">
+              <span>{datas?.owner?.ownerName || "Unknown Owner"} </span>
+              <span>{datas?.owner?.ownerEmail || "No Email Available"}</span>
+            </span>}
+            </div>
           {/* Stats Container */}
           <div className="space-y-4 mb-6">
             {/* Price Row */}
