@@ -47,9 +47,7 @@ const Home = () => {
         "Yes! Our platform is completely free for users who want to learn, share, and grow together.",
     },
   ];
-  if (loading) {
-    return <p className="text-center text-lg text-green-600">Loading...</p>;
-  }
+ 
 
   return (
     <div className='min-h-screen'>

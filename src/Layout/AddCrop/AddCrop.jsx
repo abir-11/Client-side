@@ -22,6 +22,7 @@ const AddCrop = () => {
     const quantity = parseInt(form.quantity.value);
     const description = form.description.value;
     const image = form.image.value;
+    const location=form.location.value;
 
     const cropData = {
       name: name,
@@ -30,7 +31,7 @@ const AddCrop = () => {
       unit: "kg",
       quantity: quantity,
       description: description,
-      location: "Bogura",
+      location: location,
       image: image,
       status: "pending",
       owner: {
@@ -88,7 +89,7 @@ const AddCrop = () => {
   };
 
   return (
-    <div className='min-h-screen bg-green-50'>
+    <div className='min-h-screen rounded-2xl m-5 bg-green-50'>
       <div>
         <h1 className='text-3xl text-center pt-4 text-green-800 font-bold'>Add Crops</h1>
         <div className='mt-4 flex justify-center'>
@@ -104,7 +105,16 @@ const AddCrop = () => {
                   required
                 />
               </div>
-
+                 <div className="mb-4">
+                <label className="label">Location</label>
+                <input
+                  type="text"
+                  className="input bg-transparent border-gray-400 input-bordered w-full"
+                  name='location'
+                  placeholder='Enter your crop location'
+                  required
+                />
+              </div>
               <div className="mb-4">
                 <label className="label">Type</label>
                 <select
@@ -113,9 +123,11 @@ const AddCrop = () => {
                   required
                   defaultValue=""
                 >
-                  <option value="" disabled>Select crop type</option>
-                  <option value="Fruit">Fruit</option>
-                  <option value="Vegetable">Vegetable</option>
+                 <div className='bg-green-100 p-5 rounded-2xl'>
+                   <option value="" className='bg-white mb-1' disabled>Select crop type</option>
+                  <option value="Fruit" className='bg-white'>Fruit</option>
+                  <option value="Vegetable" className='bg-white mt-1'>Vegetable</option>
+                 </div>
 
                 </select>
               </div>

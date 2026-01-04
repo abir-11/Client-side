@@ -70,7 +70,7 @@ const MyInterests = () => {
   }
 
   return (
-    <div className="min-h-screen bg-green-50 py-4 sm:py-8">
+    <div className="min-h-scree m-5 px-3 rounded-2xl bg-green-50 py-4 sm:py-8">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
 
         <div className="text-center mb-6 sm:mb-8">
