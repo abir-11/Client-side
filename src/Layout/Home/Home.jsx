@@ -55,20 +55,23 @@ const Home = () => {
       <div>
         <Swiper
           style={{
-            '--swiper-navigation-color': '#fff',
+            '--swiper-navigation-color': '#fff ',
             '--swiper-pagination-color': '#fff',
           }}
           speed={800}
           parallax={true}
+          loop={true}
           autoplay={{
             delay: 3000,
             disableOnInteraction: false,
           }}
-          pagination={{
-            clickable: true,
-          }}
-          navigation={true}
-          modules={[Parallax, Pagination, Navigation, Autoplay]} // Autoplay যোগ করা হয়েছে
+          // pagination={{
+          //   clickable: true,
+          // }}
+          //  navigation={true}
+          // Pagination, Navigation,
+         
+          modules={[Parallax,  Autoplay]} // Autoplay যোগ করা হয়েছে
           className="mySwiper"
         >
           <div
@@ -205,7 +208,7 @@ const Home = () => {
             <p className="text-green-600 font-semibold mb-2 flex justify-center items-center gap-2">
               <FaLeaf /> WHY CHOOSE US
             </p>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl text-green-800 sm:text-4xl md:text-5xl font-bold  mb-4">
               The Agriculture Process
             </h2>
             <p className="text-gray-700 text-lg sm:text-xl max-w-2xl mx-auto mb-12">
@@ -266,7 +269,7 @@ const Home = () => {
         </section>
       </div>
       <div className=" py-8 mb-16 shadow-xl">
-        <h2 className="text-3xl font-bold text-center mb-6 text-green-700">
+        <h2 className="text-3xl font-bold text-center mb-6 text-green-800">
           🌿 My Nature Blog Gallery
         </h2>
 

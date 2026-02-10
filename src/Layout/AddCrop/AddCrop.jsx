@@ -90,7 +90,7 @@ const AddCrop = () => {
 
   return (
     <div className='min-h-screen rounded-2xl m-5 bg-green-50'>
-      <div>
+      <div className='py-5'>
         <h1 className='text-3xl text-center pt-4 text-green-800 font-bold'>Add Crops</h1>
         <div className='mt-4 flex justify-center'>
           <fieldset className="fieldset border-base-300 rounded-box w-full max-w-md border p-4 bg-green-100">

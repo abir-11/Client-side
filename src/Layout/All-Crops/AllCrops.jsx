@@ -83,24 +83,52 @@ const AllCrops = () => {
   };
   return (
     <div className='min-h-screen'>
-      <div className='w-11/12 mx-auto mt-10'>
-        <h3 className='text-center text-xl sm:text-4xl text-gray-600'>
-          We Are Different From Other Farming
-        </h3>
-        <p className='text-center text-base sm:text-xl text-gray-400'>
-          We have 15 years of agriculture & eco farming experience globally, work with professionals
+      <div className="w-11/12 mx-auto mt-5 text-center">
+
+      
+
+        {/* Main Heading */}
+        <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold text-green-900 leading-tight">
+          Explore Our Fresh & Organic Crops
+        </h2>
+
+        {/* Subtitle */}
+        <p className="mt-4 text-gray-500 text-sm sm:text-lg max-w-2xl mx-auto leading-relaxed">
+          With over <span className="font-semibold text-green-700">15+ years of eco-farming experience</span>,
+          we cultivate healthy, chemical-free crops using sustainable agriculture methods.
+          Discover our wide variety of fresh organic vegetables grown with care.
         </p>
+      {/* Badge */}
+        <div className="flex justify-center my-2">
+          <span className="px-4 py-1 text-sm font-semibold tracking-wide text-green-800 bg-green-100 rounded-full shadow-sm">
+            🌱 100% Organic Farming
+          </span>
+        </div>
+        {/* Divider */}
+        <div className="flex justify-center mt-6">
+          <div className="w-24 h-1 bg-green-600 rounded-full"></div>
+        </div>
+
+         
+
       </div>
 
-      <Marquee className='border-t-2 border-b-2 border-gray-300 py-3 mt-4'>
-        <h1 className='text-2xl sm:text-4xl md:text-6xl font-bold mb-4 drop-shadow-lg text-center text-green-800'>
-          Be Healthy Fresh Organic Vegetable
+         
+      {/* Professional Marquee */}
+      <Marquee
+        speed={60}
+        pauseOnHover={true}
+        gradient={false}
+        className="border-y border-green-200 py-4 mt-10 bg-green-50"
+      >
+        <h1 className="text-2xl sm:text-4xl md:text-6xl font-extrabold tracking-wide text-green-800 px-6">
+          🌿 Fresh • Organic • Healthy • Sustainable Farming 🌿
         </h1>
       </Marquee>
 
       <div className='mt-5 flex flex-col md:flex-row justify-between items-start md:items-center w-11/12 mx-auto gap-4'>
         <div className='flex items-center gap-2 font-semibold text-xl sm:text-2xl text-[#001931] sm:leading-8'>
-          <span>({searchCrop.length})</span><span>Crops Found</span>
+          <span>Crops Found</span><span>({searchCrop.length})</span>
         </div>
 
         {/* Search Input */}
